@@ -15,7 +15,7 @@ COMP = load(fullfile(folder, "COMP.mat")).COMP;
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
 
 % Cancer samples
-group = 'Cancer_G4';
+group = 'Cancer_G3';
 Bools = ismember(SampleNums, eval(group));
 COMP = COMP(Bools, :);
 

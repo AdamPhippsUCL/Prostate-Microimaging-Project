@@ -285,8 +285,7 @@ saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals Db.png']))
 
 %% SPHERE RADIUS
 
-% -- IGNORE VOXELS WITH HIGH FLUID CONTENT IN RESIDUAL LIMITS CALCULATION
-RL_BOOL = (COMP(:,3)<0.5);
+RL_BOOL = (COMP(:,3)<1.0);
 
 
 R_diff = (measured_R-pred_R);
