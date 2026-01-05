@@ -6,7 +6,7 @@ projectfolder = pwd;
 %% Sample and Image details
 
 % Sample name
-SampleName = '20250524_UQ9'; % '20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'
+SampleName = '20250407_UQ5'; % '20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'
 
 % Use denoised data
 UseDenoisedData = true;
@@ -37,8 +37,6 @@ switch SampleName
         newMGE = zeros(size(MGE));
         newMGE(:,1:240+dx,1:640+dy)=MGE(:,1-dx:240,1-dy:640);
         MGE=newMGE;
-    case '20250224_UQ4'
-        disp('');
 end
 
 

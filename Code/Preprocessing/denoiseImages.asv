@@ -9,7 +9,7 @@ projectfolder = pwd;
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 
 % Sample name
-SampleName = '20250407_UQ5';
+SampleName = '20250224_UQ4';
 
 % Series description
 SeriesDescriptions = {...
@@ -61,41 +61,41 @@ for seriesindx = 1:length(SeriesDescriptions)
 
     slice = 15;
     
-    f1=figure;
-    f1.Position = [680   458   600   360];
+    f=figure;
+    f.Position = [680   458   600   360];
     tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
     ax = nexttile;
     imshow(squeeze(bImage(slice,:,:)), [])
     cb=colorbar;
     cb.Label.String ='Signal (a.u.)';
     title(['Original dMRI image (direction-averaged) (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
-    saveas(f1, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'dMRI_slice.png'))
+    saveas(f, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'dMRI_slice.png'))
 
 
-    f2=figure;
-    f2.Position = [680   458   600   360];
+    f=figure;
+    f.Position = [680   458   600   360];
     tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
     ax = nexttile;
     imshow(squeeze(bImageDN(slice,:,:)), [])
     cb=colorbar;
     cb.Label.String ='Signal (a.u.)';
     title(['Denoised dMRI image (direction-averaged) (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
-    saveas(f2, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'denoised_dMRI_slice.png'))
+    saveas(f, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'denoised_dMRI_slice.png'))
 
     sampleROI = createMask(drawrectangle());
+
 
     noise_std_slice = sqrt(squeeze( S2(slice,:,:) ) );
     noise_std = mean(noise_std_slice(logical(sampleROI)));
     SNRslice = sqrt(6)*squeeze(bImageDN(slice,:,:))/noise_std; % Sqrt(6) as averaging over 6 directions
 
-    f3=figure;
-    h=histogram(SNRslice(logical(sampleROI)), 1:1:50);
+
+    f=figure;
+    histogram(SNR(logical(sampleROI)), 1:1:50)
     title(SampleName, Interpreter="none")
     xlabel('SNR')
     ylabel('Counts')
-    ylim([0, 1.1*max(h.Values)])
     title(['SNR values in samples (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
-    saveas(f3, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'SNR_histogram.png'))
 
 
     %% Save results
