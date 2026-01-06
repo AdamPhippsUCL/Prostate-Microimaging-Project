@@ -67,17 +67,31 @@ aspct = 1./dinfo(1).PixelSpacing;
 
 samplesROI = zeros([size(T2s)]);
 
-figure
-imshow(T2s(:,:,1),[0 100])
+f=figure;
+ax = axes;
+imshow(T2s(:,:,1),[0 75])
 daspect([flipud(aspct)', 1]);
+ax.Position=[0.02, 0.02, 0.96, 0.92];
+cb=colorbar;
+cb.Label.String = 'T2 (ms)';
+cb.Position = [0.65   0.02000    0.0250    0.960];
+title([SampleName ' (1)'], Interpreter="none", FontSize=9);
+saveas(f, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'T2_slice_1.png'))
 
 sampleROI = drawrectangle();
 samplesROI(:,:,1) = createMask(sampleROI);
 
 
-figure
-imshow(T2s(:,:,2),[0 100])
+f=figure;
+ax = axes;
+imshow(T2s(:,:,2),[0 75])
 daspect([flipud(aspct)', 1]);
+ax.Position=[0.02, 0.02, 0.96, 0.92];
+cb=colorbar;
+cb.Label.String = 'T2 (ms)';
+cb.Position = [0.65   0.02000    0.0250    0.960];
+title([SampleName ' (2)'], Interpreter="none", FontSize=9);
+saveas(f, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'T2_slice_2.png'))
 
 sampleROI = drawrectangle();
 samplesROI(:,:,2) = createMask(sampleROI);
@@ -85,10 +99,11 @@ samplesROI(:,:,2) = createMask(sampleROI);
 
 
 % T2 distribution
-figure
+f=figure;
 histogram(T2s(logical(samplesROI)), 0:1:100)
 ylabel('Counts')
 xlabel('T2 (ms)')
 title(SampleName, Interpreter="none");
 hold on
 xline(14, '--')
+saveas(f, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'T2_dist.png'))

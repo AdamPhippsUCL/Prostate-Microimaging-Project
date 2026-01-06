@@ -24,6 +24,7 @@ for indx = 1:N
     params = RESULTS(indx).ModelParams;
     error = RESULTS(indx).ParamError;
     AIC = RESULTS(indx).AIC;
+    AICc = RESULTS(indx).AICc;
 
     % Component
     switch component
@@ -76,7 +77,8 @@ for indx = 1:N
 
     % AIC
     T{indx, 'AIC'} = {sprintf('%.3f', AIC)};
-
+    % AICc
+    T{indx, 'AICc'} = {sprintf('%.3f', AICc)};
 end
 
 % Save as excel sheet

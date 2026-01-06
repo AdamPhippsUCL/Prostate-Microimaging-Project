@@ -38,7 +38,7 @@ switch opts.modelname
 
     case 'Sphere'
 
-        % model_params = [R, D]
+        % model_params = [R, D, S0]
         R = model_params(1);
         D = model_params(2);
         S0 = model_params(3);
@@ -67,7 +67,7 @@ switch opts.modelname
 
     case 'Ball+Sphere'
 
-        % model_params = [S0, fs, R, Ds, Db, S0]
+        % model_params = [fs, R, Ds, Db, S0]
         fs = model_params(1);
         fb = 1-fs;
         R = model_params(2);
@@ -83,6 +83,32 @@ switch opts.modelname
 
         % Total signal
         signal = S0*(fs*Ss + fb*Sb);
+
+
+    case 'Stretched Exponential'
+
+        % model_params = [S0, D, alpha]
+        S0 = model_params(1);
+        D = model_params(2);
+        alpha = model_params(3);
+
+        signal = S0*exp(- (bval*D*1e-3)^alpha );
+
+    % 
+    % case 'Hindered ADC'
+    % 
+    %     % model_params = [S0, D, tau]
+    %     S0 = model_params(1);
+    %     D = model_params(2);
+    %     tau = model_params(3);
+    % 
+    %     bval
+    %     S0
+    %     tau
+    %     DELTA
+    %     Deff = D/(1 + DELTA/tau)
+    % 
+    %     signal = S0*ball(bval, Deff);
 
 
 end

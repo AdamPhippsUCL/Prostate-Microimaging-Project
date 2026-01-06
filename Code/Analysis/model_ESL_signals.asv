@@ -26,9 +26,9 @@ components = {'E', 'S'};
 
 modelnames = {
   % 'ADC',...
-  ...'DKI',...
-  ...'Sphere',...
-  'Ball+Sphere'...
+  'DKI',...
+  % 'Sphere',...
+  % 'Ball+Sphere'...
     };
 
 % Fitting
@@ -36,8 +36,6 @@ lambda = 0e-3; % Regularisation
 fittingtechnique = 'LSQ';
 
 DisplayPredictions = false;
-
-DisplayLikelihoodProfiles = true;
 
 for compindx = 1:length(components)
 
@@ -111,32 +109,33 @@ for compindx = 1:length(components)
         switch modelname     
             case 'ADC'            
                 Nparam = 2;
-                ParamNames = {'S0', 'D'};
                 beta0 = [1, 1];
                 lb = [0,0];
                 ub=[2,3];       
                 
             case 'DKI'        
                 Nparam = 3;
-                ParamNames = {'S0', 'D', 'K'};
                 beta0 = [1, 1, 0.5];
                 lb = [0, 0, 0];
                 ub = [2, 3, 5];
 
             case 'Sphere'
                 Nparam = 3;
-                ParamNames = {'R', 'D', 'S0'};
                 beta0 = [20, 0.5, 1];
                 lb = [1, 0, 0.8];
                 ub = [100, 3, 1.2];
 
             case 'Ball+Sphere'
                 Nparam = 5;
-                ParamNames = {'fs', 'R', 'Ds', 'Db', 'S0'};
                 beta0 = [0.1, 10, 1, 1, 1];
                 lb = [0, 1, 0, 0, 0.8];
                 ub = [1, 50, 3, 3, 1.2];
                 
+            case 'Hindered ADC'            
+                Nparam = 3;
+                beta0 = [1, 1, 100];
+                lb = [0, 0, 1];
+                ub=[2, 3, 100];    
         end
 
         
@@ -264,64 +263,53 @@ for compindx = 1:length(components)
         end
 
 
+        % ======= CODE NOT UPDATED
+
+        % == Paramater likelihood profile
+
+        fixedindx = 1;
+
+        Nvals = 100;
+        low = (40*lb(fixedindx)+ub(fixedindx))/40;
+        high = (40*ub(fixedindx)+lb(fixedindx))/40;
+        fixedvals = linspace(low,high,Nvals); %linspace(lb(fixedindx), ub(fixedindx),Nvals);
+        valspacing = fixedvals(2)-fixedvals(1);
+        resnorms = zeros(1,Nvals);
+
+        for findx = 1:Nvals
+
+            fixedval = fixedvals(findx);
+
+            thisbeta0 = beta0;
+            thisbeta0(fixedindx) = fixedval;
+
+            thislb = lb;
+            thislb(fixedindx) = fixedval-0.5*valspacing;
+
+            thisub = ub;
+            thisub(fixedindx) = fixedval+0.5*valspacing;
+
+            % Modelling predictions
+            [params, resnorm] = fitting_func( ...
+                s, ...
+                scheme, ...
+                modeltype = modelname, ...
+                fittingtechnique = fittingtechnique,...
+                beta0=thisbeta0,...
+                lb=thislb,...
+                ub=thisub,...
+                lambda=lambda ...
+                );
 
 
-        % ===== Paramater likelihood profile
 
-
-        if DisplayLikelihoodProfiles
-
-        for fixedindx = 1:Nparam
-    
-            Nvals = 100;
-            low = (40*lb(fixedindx)+ub(fixedindx))/40;
-            high = (40*ub(fixedindx)+lb(fixedindx))/40;
-            fixedvals = linspace(low,high,Nvals); %linspace(lb(fixedindx), ub(fixedindx),Nvals);
-            valspacing = fixedvals(2)-fixedvals(1);
-            resnorms = zeros(1,Nvals);
-    
-            for findx = 1:Nvals
-    
-                fixedval = fixedvals(findx);
-    
-                thisbeta0 = beta0;
-                thisbeta0(fixedindx) = fixedval;
-    
-                thislb = lb;
-                thislb(fixedindx) = fixedval-0.5*valspacing;
-    
-                thisub = ub;
-                thisub(fixedindx) = fixedval+0.5*valspacing;
-    
-                % Modelling predictions
-                [params, resnorm] = fitting_func( ...
-                    s, ...
-                    scheme, ...
-                    modelname = modelname, ...
-                    fittingtechnique = fittingtechnique,...
-                    Nparam=Nparam,...
-                    beta0=thisbeta0,...
-                    lb=thislb,...
-                    ub=thisub,...
-                    lambda=lambda ...
-                    );
-    
-   
-                resnorms(findx)=resnorm;
-    
-            end
-    
-            figure
-            scatter(fixedvals, resnorms, '*')
-            % ylim([0, 0.005])
-
-            title(['Component: ' component ', Model: ' modelname ', Parameter ' ParamNames{fixedindx}])
-            xlabel(ParamNames{fixedindx})
-            ylabel('Norm of residuals')
+            resnorms(findx)=resnorm;
 
         end
 
-        end
+        figure
+        scatter(fixedvals, resnorms)
+        ylim([0, 0.005])
 
         % ================   
 
