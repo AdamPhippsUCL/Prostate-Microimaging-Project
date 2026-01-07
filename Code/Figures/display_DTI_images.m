@@ -5,7 +5,7 @@ projectfolder = pwd;
 
 %% Sample and image details
 
-SampleName = '20250224_UQ4';
+SampleName = '20250523_UQ8';
 
 SeriesDescription = '40u_DtiSE_2012_SPOIL10%';
 
@@ -20,8 +20,8 @@ ImageArrayDN = load(fullfile(projectfolder, 'Imaging Data', 'MAT DN', SampleName
 
 slice = 60;
 
-% First direction
-direction = 6;
+% Direction
+direction = 1;
 
 f=figure;
 f.Position = [680 458 560 240];
@@ -31,7 +31,7 @@ cb = colorbar;
 cb.Label.String = 'Signal (a.u.)';
 ax.Position = [0.02 0.02 0.82 0.98];
 title([SampleName ' Direction ' num2str(direction) ' (Original)'], Interpreter="none")
-saveas(f, fullfile(projectfolder, 'Figures', 'DTI_Original.png'))
+saveas(f, fullfile(projectfolder, 'Figures', 'Supplementary', 'DTI_Original.png'))
 
 f=figure;
 f.Position = [680 458 560 240];
@@ -41,4 +41,4 @@ cb = colorbar;
 cb.Label.String = 'Signal (a.u.)';
 ax.Position = [0.02 0.02 0.82 0.98];
 title([SampleName ' Direction ' num2str(direction) ' (Denoised)'], Interpreter="none")
-saveas(f, fullfile(projectfolder, 'Figures', 'DTI_Denoised.png'))
+saveas(f, fullfile(projectfolder, 'Figures', 'Supplementary', 'DTI_Denoised.png'))
