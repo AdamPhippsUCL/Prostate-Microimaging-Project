@@ -16,7 +16,7 @@ switch UseDenoisedData
 end
 
 % Sample name
-SampleName = '20250524_UQ9';
+SampleName = '20250224_UQ4';
 
 % Series description
 SeriesDescription = '40u_DtiSE_2012_SPOIL10% (20 micron)';
@@ -92,3 +92,8 @@ save(fullfile(outfolder, 'FA.mat'), 'FA');
 % Diffusion weighted FA
 dwFA = D.*FA;
 save(fullfile(outfolder, 'dwFA.mat'), 'dwFA');
+
+
+
+
+

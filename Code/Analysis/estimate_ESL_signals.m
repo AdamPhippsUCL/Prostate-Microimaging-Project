@@ -324,6 +324,7 @@ for sindx = 1:length(SampleNames)
 
     % Save COMPOSITION
     folder = fullfile(projectfolder, 'Outputs', 'Masks', samplename, SeriesDescriptions{1});
+
     mkdir(folder)
     save(fullfile(folder, 'COMPOSITION.mat'), 'COMPOSITION');
 
@@ -479,10 +480,10 @@ s = signals(:,indices,:);
 bvals = [scheme(indices).bval];
 
 % Display error bars with 95% confidence intervals from botstrapping
-errorbar(bvals-1*bshift, s(1,:,1), s(1,:,1)-s(1,:,3), s(1,:,4)-s(1,:,1), '-*', color=[0.8500 0.3250 0.0980], DisplayName='E (Short \Delta)');
+errorbar(bvals-1*bshift, s(1,:,1), s(1,:,1)-s(1,:,3), s(1,:,4)-s(1,:,1), '--*', LineWidth = 1, color='#EB0000', DisplayName='Epithelium');
 hold on
-errorbar(bvals-1*bshift, s(2,:,1), s(2,:,1)-s(2,:,3), s(2,:,4)-s(2,:,1), '-*', color=[0.4660 0.6740 0.1880], DisplayName='S (Short \Delta)');
-errorbar(bvals-1*bshift, s(3,:,1), s(3,:,1)-s(3,:,3), s(3,:,4)-s(3,:,1),'-*', color=[0 0.4470 0.7410], DisplayName = 'L (Short \Delta)');
+errorbar(bvals-1*bshift, s(2,:,1), s(2,:,1)-s(2,:,3), s(2,:,4)-s(2,:,1), '--*', LineWidth = 1, color='#10DE00', DisplayName='Stroma');
+% errorbar(bvals-1*bshift, s(3,:,1), s(3,:,1)-s(3,:,3), s(3,:,4)-s(3,:,1),'--*', color=[0 0.4470 0.7410], DisplayName = 'L (Short \Delta)');
 
 
 % % Display error bars with STANDARD ERROR from botstrapping
@@ -497,9 +498,9 @@ indices = 7:11;
 s = signals(:,indices,:);
 
 % Display error bars with 95% confidence intervals from botstrapping
-errorbar(bvals+1*bshift, s(1,:,1), s(1,:,1)-s(1,:,3), s(1,:,4)-s(1,:,1), '-.*', color=[0.8500 0.3250 0.0980], DisplayName='E (Long \Delta)');
-errorbar(bvals+1*bshift, s(2,:,1), s(2,:,1)-s(2,:,3), s(2,:,4)-s(2,:,1),  '-.*', color=[0.4660 0.6740 0.1880], DisplayName='S (Long \Delta)');
-errorbar(bvals+1*bshift, s(3,:,1), s(3,:,1)-s(3,:,3), s(3,:,4)-s(3,:,1), '-.*', color=[0 0.4470 0.7410], DisplayName = 'L (Long \Delta)');
+errorbar(bvals+1*bshift, s(1,:,1), s(1,:,1)-s(1,:,3), s(1,:,4)-s(1,:,1), '--*', LineWidth = 1, color='#EB0000', HandleVisibility='off');
+errorbar(bvals+1*bshift, s(2,:,1), s(2,:,1)-s(2,:,3), s(2,:,4)-s(2,:,1),  '--*', LineWidth = 1, color='#10DE00', HandleVisibility='off');
+% errorbar(bvals+1*bshift, s(3,:,1), s(3,:,1)-s(3,:,3), s(3,:,4)-s(3,:,1), '--*', color=[0 0.4470 0.7410], DisplayName = 'L (Long \Delta)');
 
 % % Display error bars with STANDARD ERROR from botstrapping
 % errorbar(bvals+1*bshift, s(1,:,1), s(1,:,2), '-.*', color=[0.4660 0.6740 0.1880], DisplayName='S (Long \Delta)');
@@ -508,16 +509,16 @@ errorbar(bvals+1*bshift, s(3,:,1), s(3,:,1)-s(3,:,3), s(3,:,4)-s(3,:,1), '-.*', 
 
 xticks(bvals); 
 xticklabels(bvals)
-ylim([-0.05,0.7])
-ylabel('Normalized signal estimate')
+ylim([0.22,0.7])
+ylabel('dMRI signal')
 xlim([800,2200])
 xlabel('b-value (s/mm^{2})')
 xticks(bvals)
 xticklabels(["1000", "1250", "1500", "1750", "2000"])
 grid on
-legend('NumColumns', 2);
+legend('NumColumns', 1);
 ax=gca();
-ax.FontSize=12;
+ax.FontSize=14;
 f.Position = [488   242   720   480];
 
 
