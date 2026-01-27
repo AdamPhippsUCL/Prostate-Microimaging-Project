@@ -32,6 +32,7 @@ SeriesDescriptions = {...
 
 % Define window
 window = [5 5 1];
+window = [3,3,3];
 
 for seriesindx = 1:length(SeriesDescriptions)
 
