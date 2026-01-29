@@ -6,7 +6,13 @@ projectfolder = pwd;
 %% Sample and image details
 
 % Samples
-SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
+
+% SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
+% multisample = true;
+
+SampleNames = {'20260128_UQ10'};
+multisample = false;
+
 
 % Image
 SeriesDescriptions = {
@@ -22,6 +28,7 @@ SeriesDescriptions = {
     'STEAM_LongDELTA_100 (DS)',...
     'STEAM_LongDELTA_120 (DS)'...
 };
+
 scheme = load(fullfile(projectfolder, "Schemes", "20250224_UQ4 AllDELTA.mat")).scheme;
 
 
@@ -100,14 +107,34 @@ for seriesindx = 2:length(SeriesDescriptions)
     end
     
     % Save measured and predicted signals
-    folder = fullfile(projectfolder, 'Outputs', 'Signals');
-    mkdir(folder)
-    save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
-    save(fullfile(folder, 'COMP.mat'), 'COMP')
-    
-    seriesfolder = fullfile(folder, SeriesDescription);
-    mkdir(seriesfolder);
-    save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
-    save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
+
+    switch multisample
+
+        case true
+            folder = fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample');
+            mkdir(folder)
+            save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
+            save(fullfile(folder, 'COMP.mat'), 'COMP')
+            
+            seriesfolder = fullfile(folder, SeriesDescription);
+            mkdir(seriesfolder);
+            save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
+            save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
+
+
+        case false
+
+            folder = fullfile(projectfolder, 'Outputs', 'Signals', SampleName);
+            mkdir(folder)
+            save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
+            save(fullfile(folder, 'COMP.mat'), 'COMP')
+            
+            seriesfolder = fullfile(folder, SeriesDescription);
+            mkdir(seriesfolder);
+            save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
+            save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
+
+
+    end
 
 end

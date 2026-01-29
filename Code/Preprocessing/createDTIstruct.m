@@ -12,12 +12,12 @@ ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 ImageType = 'MAT';
 
 % Sample name
-SampleName = '20250524_UQ9';
+SampleName = '20260128_UQ10';
 
 % Series Description
 SeriesDescriptions = {
     '40u_DtiSE_2012_SPOIL10%',...
-    % 'SE_b0_SPOIL5%',...
+    'SE_b0_SPOIL5%',...
     % 'STEAM_DELTA_40',...
     % 'STEAM_DELTA_60',...
     % 'STEAM_DELTA_80',...
@@ -82,7 +82,7 @@ for indx = 1:length(SeriesDescriptions)
             end
 
 
-        case {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'}
+        case {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9', '20260128_UQ10'}
             
             switch SeriesDescription
 

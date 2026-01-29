@@ -5,38 +5,41 @@ projectfolder = pwd;
 
 %% Imaging data
 
-SampleName = '20250524_UQ9';
+SampleName = '20260128_UQ10';
 
-SeriesDescription = 'T2_MSME';
+SeriesDescription = '3D_T2_MSME_match_DTI (20 micron)';
 
 % Imaging data folder 
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 
-ImageArray = load(fullfile(ImagingDataFolder, 'MAT', SampleName, SeriesDescription, 'ImageArray.mat')).ImageArray;
-dinfo = load(fullfile(ImagingDataFolder, 'MAT', SampleName, SeriesDescription, 'dinfo.mat')).dinfo;
+ImageArray = load(fullfile(ImagingDataFolder, 'MAT DN', SampleName, SeriesDescription, 'axialImageArray.mat')).ImageArray;
+dinfo = load(fullfile(ImagingDataFolder, 'MAT DN', SampleName, SeriesDescription, 'axialdinfo.mat')).dinfo;
 
 
-%% Reformat
-
-% Stack ImageArray by slices
-Echos = unique([dinfo(:).EchoTime]);
-NEcho = length(Echos);
-Slices = unique([dinfo(:).sl]);
-NSlices = length(Slices);
-
-newImageArray = zeros([size(ImageArray, 1:2), NSlices, NEcho]);
-
-for slindx = 1:NSlices
-
-    newImageArray(:,:,slindx,:) = ImageArray(:,:,[dinfo(:).sl]==Slices(slindx));
-
-end
-
-ImageArray = newImageArray;
-clear newImageArray;
+% %% Reformat
+% 
+% % Stack ImageArray by slices
+% Echos = unique([dinfo(:).EchoTime]);
+% NEcho = length(Echos);
+% Slices = unique([dinfo(:).sl]);
+% NSlices = length(Slices);
+% 
+% newImageArray = zeros([size(ImageArray, 1:2), NSlices, NEcho]);
+% 
+% for slindx = 1:NSlices
+% 
+%     newImageArray(:,:,slindx,:) = ImageArray(:,:,[dinfo(:).sl]==Slices(slindx));
+% 
+% end
+% 
+% ImageArray = newImageArray;
+% clear newImageArray;
 
 
 %% T2 calculation (log fit)
+
+Echos = [dinfo(:).EchoTime];
+NEcho = length(Echos);
 
 logImageArray = log(ImageArray);
 
@@ -61,9 +64,17 @@ T2s = reshape(T2s, [size(ImageArray, 1:3), 1]);
 
 
 
+%% Save T2 map
+
+save(fullfile(ImagingDataFolder, 'MAT DN', SampleName, SeriesDescription, 'T2.mat'), "T2s");
+
+
+
+
 %% Display slices
 
 aspct = 1./dinfo(1).PixelSpacing;
+aspct = aspct(:,1);
 
 samplesROI = zeros([size(T2s)]);
 

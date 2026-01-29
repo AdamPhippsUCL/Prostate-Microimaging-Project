@@ -6,16 +6,16 @@ projectfolder = pwd;
 %% Initial definitions
 
 % Sample name
-SampleName = '20250524_UQ9';
+SampleName = '20260128_UQ10';
 
 % DICOM folder
-DICOMfolder = "C:\Users\adam\OneDrive - University College London\UCL PhD\PhD\Projects\USyd Microimaging Project\Imaging Data\20250524_185139_RB_UQ09_RB_UQ09_1_1\17\pdata\1\dicom";
+DICOMfolder = "C:\Users\adam\OneDrive - University College London\UCL PhD\PhD\Projects\USyd Microimaging Project\Imaging Data\20260128_141531_RB_UQ010_RB_UQ010_1_1\36 (SE b0)\pdata\1\dicom";
 
 % Imaging data folder (to save MAT images)
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 
 % Image type
-imgtype = 'T2';
+imgtype = 'DTI';
 
 %% Read DICOM information
 
