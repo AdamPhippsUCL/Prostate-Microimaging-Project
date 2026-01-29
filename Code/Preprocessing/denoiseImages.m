@@ -13,12 +13,12 @@ SampleName = '20250523_UQ8';
 
 % Series description
 SeriesDescriptions = {...
-     '40u_DtiSE_2012_SPOIL10%',...
+     % '40u_DtiSE_2012_SPOIL10%',...
      % 'SE_b0_SPOIL5%',...
      % 'STEAM_ShortDELTA_15',...
      % 'STEAM_ShortDELTA_20',...
      % 'STEAM_ShortDELTA_30',...
-     % 'STEAM_ShortDELTA_40',...    
+     'STEAM_ShortDELTA_40',...    
      % 'STEAM_ShortDELTA_50',...
      % 'STEAM_LongDELTA_40',...
      % 'STEAM_LongDELTA_60',...
@@ -32,6 +32,7 @@ SeriesDescriptions = {...
 
 % Define window
 window = [5 5 1];
+window = [3,3,3];
 
 for seriesindx = 1:length(SeriesDescriptions)
 
@@ -61,42 +62,79 @@ for seriesindx = 1:length(SeriesDescriptions)
 
     slice = 15;
     
-    f1=figure;
-    f1.Position = [680   458   600   360];
-    tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
-    ax = nexttile;
-    imshow(squeeze(bImage(slice,:,:)), [])
-    cb=colorbar;
-    cb.Label.String ='Signal (a.u.)';
-    title(['Original dMRI image (direction-averaged) (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
-    saveas(f1, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'dMRI_slice.png'))
-
-
-    f2=figure;
-    f2.Position = [680   458   600   360];
-    tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
-    ax = nexttile;
-    imshow(squeeze(bImageDN(slice,:,:)), [])
-    cb=colorbar;
-    cb.Label.String ='Signal (a.u.)';
-    title(['Denoised dMRI image (direction-averaged) (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
-    saveas(f2, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'denoised_dMRI_slice.png'))
-
-    sampleROI = createMask(drawrectangle());
+    % f1=figure;
+    % f1.Position = [680   458   600   360];
+    % tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
+    % ax = nexttile;
+    % imshow(squeeze(bImage(slice,:,:)), [])
+    % cb=colorbar;
+    % cb.Label.String ='Signal (a.u.)';
+    % title(['Original dMRI image (direction-averaged) (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
+    % saveas(f1, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'dMRI_slice.png'))
+    % 
+    % 
+    % f2=figure;
+    % f2.Position = [680   458   600   360];
+    % tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
+    % ax = nexttile;
+    % imshow(squeeze(bImageDN(slice,:,:)), [])
+    % cb=colorbar;
+    % cb.Label.String ='Signal (a.u.)';
+    % title(['Denoised dMRI image (direction-averaged) (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
+    % saveas(f2, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'denoised_dMRI_slice.png'))
+    % 
+    % sampleROI = createMask(drawrectangle());
 
     noise_std_slice = sqrt(squeeze( S2(slice,:,:) ) );
-    noise_std = mean(noise_std_slice(logical(sampleROI)));
-    SNRslice = sqrt(6)*squeeze(bImageDN(slice,:,:))/noise_std; % Sqrt(6) as averaging over 6 directions
+    % noise_std = mean(noise_std_slice(logical(sampleROI)));
 
-    f3=figure;
-    h=histogram(SNRslice(logical(sampleROI)), 1:1:50);
-    title(SampleName, Interpreter="none")
-    xlabel('SNR')
-    ylabel('Counts')
-    ylim([0, 1.1*max(h.Values)])
-    title(['SNR values in samples (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
-    saveas(f3, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'SNR_histogram.png'))
+    % Show SNR for different directions
+    for direction = [1,3,5]
 
+        f = figure;
+        f.Position = [600   400   600   240];
+        tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
+        ax = nexttile;
+        imshow(squeeze(ImageArray(slice,:,:,direction+1)), [])
+        cb=colorbar;
+        cb.Label.String ='Signal (a.u.)';
+        title([SampleName ', Direction ' num2str(direction) ' (Original)'], Interpreter='None')
+        saveas(f, [fullfile(projectfolder, 'Figures', 'Supplementary', ['Original_dMRI_direction_' num2str(direction) '.png'])])
+   
+        f = figure;
+        f.Position = [600   400   600   240];
+        tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
+        ax = nexttile;
+        imshow(squeeze(ImageArrayDN(slice,:,:,direction+1)), [])
+        cb=colorbar;
+        cb.Label.String ='Signal (a.u.)';
+        title([SampleName ', Direction ' num2str(direction) ' (Denoised)'], Interpreter='None')
+        saveas(f, [fullfile(projectfolder, 'Figures', 'Supplementary', ['Denoised_dMRI_direction_' num2str(direction) '.png'])])
+   
+
+        
+
+        SNRslice = squeeze(ImageArray(slice,:,:,direction+1))./noise_std_slice; % Sqrt(6) as averaging over 6 directions
+    
+        % f3=figure;
+        % h=histogram(SNRslice(logical(sampleROI)), 1:1:50);
+        % title(SampleName, Interpreter="none")
+        % xlabel('SNR')
+        % ylabel('Counts')
+        % ylim([0, 1.1*max(h.Values)])
+        % title(['SNR values in samples (Sample set: ' SampleName(end-2:end) ')'], Interpreter="none")
+        % saveas(f3, fullfile(projectfolder, 'Figures', 'Reviewer Response', 'SNR_histogram.png'))
+    
+        f = figure;
+        f.Position = [600   400   600   240];
+        tiledlayout(1,1,'Padding','compact','TileSpacing','compact')
+        ax = nexttile;
+        imshow(SNRslice, [])
+        cb=colorbar;
+        cb.Label.String ='SNR';
+        title([SampleName ', Direction ' num2str(direction) ' (SNR)'], Interpreter='None')
+        saveas(f, [fullfile(projectfolder, 'Figures', 'Supplementary', ['SNR_direction_' num2str(direction) '.png'])])
+    end
 
     %% Save results
     ImageArray = ImageArrayDN;

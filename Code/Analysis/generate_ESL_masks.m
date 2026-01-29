@@ -6,7 +6,7 @@ projectfolder = pwd;
 %% Sample and Image details
 
 % Sample name
-SampleName = '20250407_UQ5'; % '20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'
+SampleName = '20250524_UQ9'; % '20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'
 
 % Use denoised data
 UseDenoisedData = true;
@@ -27,6 +27,11 @@ MGE = load(fullfile(ImagingDataFolder, SampleName, MGE_SeriesDescription, 'avgIm
 DTI_SeriesDescription = '40u_DtiSE_2012_SPOIL10% (20 micron)';
 dwFA = load(fullfile(projectfolder, 'Outputs', 'Model Fitting', SampleName, 'DTI', DTI_SeriesDescription, 'dwFA.mat')).dwFA;
 
+
+
+% Alter thresholds (reviewer response)
+thres_alter = 'none';
+frac = 0.1;
 
 %%  Displace images
 
@@ -50,6 +55,18 @@ switch SampleName
         MGEhigh = 1.20e-7;
         dwFAlow = 14e-5;
 
+        % NEW THRESHOLD FOR REVIEW RESPONSE
+        switch thres_alter
+            case 'Lhigh'
+                MGEhigh = (1+frac)*MGEhigh;
+            case 'Llow'
+                MGEhigh = (1-frac)*MGEhigh;
+            case 'Shigh'
+                dwFAlow = (1+frac)*dwFAlow;
+            case 'Slow'
+                dwFAlow = (1-frac)*dwFAlow;
+        end
+
         STROMA = (dwFA>dwFAlow).*and(MGE<MGEhigh, MGE>MGElow);
         LUMEN = (MGE>MGEhigh);
         EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);        
@@ -60,6 +77,18 @@ switch SampleName
         MGElow = 0.5e-7;
         MGEhigh = 3.5e-7;
         dwFAlow = 14e-5;
+
+        % NEW THRESHOLD FOR REVIEW RESPONSE
+        switch thres_alter
+            case 'Lhigh'
+                MGEhigh = (1+frac)*MGEhigh;
+            case 'Llow'
+                MGEhigh = (1-frac)*MGEhigh;
+            case 'Shigh'
+                dwFAlow = (1+frac)*dwFAlow;
+            case 'Slow'
+                dwFAlow = (1-frac)*dwFAlow;
+        end
 
         STROMA = (dwFA>dwFAlow).*and(MGE<MGEhigh, MGE>MGElow);
         LUMEN = (MGE>MGEhigh);
@@ -72,6 +101,18 @@ switch SampleName
         MGEhigh = 1.05e-7;
         dwFAlow = 14e-5;
 
+        % NEW THRESHOLD FOR REVIEW RESPONSE
+        switch thres_alter
+            case 'Lhigh'
+                MGEhigh = (1+frac)*MGEhigh;
+            case 'Llow'
+                MGEhigh = (1-frac)*MGEhigh;
+            case 'Shigh'
+                dwFAlow = (1+frac)*dwFAlow;
+            case 'Slow'
+                dwFAlow = (1-frac)*dwFAlow;
+        end
+
         STROMA = (dwFA>dwFAlow).*and(MGE<MGEhigh, MGE>MGElow);
         LUMEN = (MGE>MGEhigh);
         EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
@@ -82,6 +123,18 @@ switch SampleName
         MGElow = 1.0e-8;
         MGEhigh = 4.5e-8;
         dwFAlow = 14e-5;
+
+        % NEW THRESHOLD FOR REVIEW RESPONSE
+        switch thres_alter
+            case 'Lhigh'
+                MGEhigh = (1+frac)*MGEhigh;
+            case 'Llow'
+                MGEhigh = (1-frac)*MGEhigh;
+            case 'Shigh'
+                dwFAlow = (1+frac)*dwFAlow;
+            case 'Slow'
+                dwFAlow = (1-frac)*dwFAlow;
+        end
 
         STROMA = (dwFA>dwFAlow).*and(MGE<MGEhigh, MGE>MGElow);
         LUMEN = (MGE>MGEhigh);
@@ -94,6 +147,18 @@ switch SampleName
         MGEhigh = 1.6e-7;
         dwFAlow = 14e-5;
 
+        % NEW THRESHOLD FOR REVIEW RESPONSE
+        switch thres_alter
+            case 'Lhigh'
+                MGEhigh = (1+frac)*MGEhigh;
+            case 'Llow'
+                MGEhigh = (1-frac)*MGEhigh;
+            case 'Shigh'
+                dwFAlow = (1+frac)*dwFAlow;
+            case 'Slow'
+                dwFAlow = (1-frac)*dwFAlow;
+        end     
+
         STROMA = (dwFA>dwFAlow).*and(MGE<MGEhigh, MGE>MGElow);
         LUMEN = (MGE>MGEhigh);
         EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
@@ -105,6 +170,18 @@ switch SampleName
         MGEhigh = 1.05e-7;
         dwFAlow = 14e-5;
 
+        % NEW THRESHOLD FOR REVIEW RESPONSE
+        switch thres_alter
+            case 'Lhigh'
+                MGEhigh = (1+frac)*MGEhigh;
+            case 'Llow'
+                MGEhigh = (1-frac)*MGEhigh;
+            case 'Shigh'
+                dwFAlow = (1+frac)*dwFAlow;
+            case 'Slow'
+                dwFAlow = (1-frac)*dwFAlow;
+        end
+        
         STROMA = (dwFA>dwFAlow).*and(MGE<MGEhigh, MGE>MGElow);
         LUMEN = (MGE>MGEhigh);
         EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
@@ -120,24 +197,34 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 
 sl=120;
 cols = 1:640;%20:620;
-rows = 1:240;%35:210;
-figure
-imshow(squeeze(MGE(sl,rows,cols)),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
-figure
-imshow(squeeze(dwFA(sl,rows,cols)),[0 prctile(squeeze(dwFA(sl,rows,cols)), 99.9, 'all')]);
-figure
-imshow(squeeze(MGE(sl,rows,cols)),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
-hold on
-mask = imshow(squeeze(displaymasks(sl,rows,cols,:)));
-set(mask, 'AlphaData', 0.2)
+rows = 30:210;%35:210;
+f=figure;
+f.Position = [680   358   420   600];
+ax = axes;
+imshow(rot90(squeeze(MGE(sl,rows,cols)), -1),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
+ax.Position = [0.02 0.02 0.96 0.94];
+title('Gradient echo image')
 
-% Axial
-sl=74;
-figure
-imshow(squeeze(MGE(:,:,sl)),[0 prctile(squeeze(MGE(:,:,sl)), 99.9, 'all')]);
+figure;
+imshow(squeeze(dwFA(sl,rows,cols)),[0 prctile(squeeze(dwFA(sl,rows,cols)), 99.9, 'all')]);
+
+
+f=figure;
+f.Position = [680   358   420   600];
+ax = axes;
+imshow(rot90(squeeze(MGE(sl,rows,cols)), -1),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
 hold on
-mask = imshow(squeeze(displaymasks(:,:,sl,:)));
+mask = imshow(rot90(squeeze(displaymasks(sl,rows,cols,:)), -1));
 set(mask, 'AlphaData', 0.2)
+ax.Position = [0.02 0.02 0.96 0.94];
+
+% % Axial
+% sl=74;
+% figure
+% imshow(squeeze(MGE(:,:,sl)),[0 prctile(squeeze(MGE(:,:,sl)), 99.9, 'all')]);
+% hold on
+% mask = imshow(squeeze(displaymasks(:,:,sl,:)));
+% set(mask, 'AlphaData', 0.2)
 
 %% Save masks
 

@@ -1,0 +1,113 @@
+
+projectfolder = pwd;
+
+% Define stromal parallel and perpendicular diffusivities (from DTI results)
+D_para = 1.5e-3;
+D_perp = 0.35e-3;
+
+% Directions used for dMRI (and DTI)
+Directions = [0.298125142074257, -0.135667933951053, 0.944836288126497; 
+-0.618180014934883, 0.326095377539748, 0.715202959922788;
+ -0.484210504458277, -0.699430850066454, 0.525677347188918;
+ 0.979440278229609, 0.0950661262753959, 0.177930247615451; 
+0.286405891720967, 0.8171218105954, 0.500283531446732 ;
+-0.503173092190641, 0.842215137261311, -0.193624641673573];
+
+
+% B values to simulate for
+bvals = [1000, 1250, 1500, 1750, 2000];
+
+f=figure;
+
+
+for bval = bvals
+
+    % === Voxel 1: all stroma aligned
+    
+    V1_Dtensor = [D_para, 0, 0; 0, D_perp, 0; 0, 0, D_perp];
+    
+    
+    V1_signals = zeros(size(Directions, 1), 1);
+    
+    for dindx = 1:size(Directions,1)
+    
+        bvec = sqrt(bval)*Directions(dindx,:)';
+    
+        V1_signals(dindx) = exp(-bvec'*V1_Dtensor*bvec);
+    
+    end
+    
+    V1_avgsignal = mean(V1_signals);
+    
+    
+    
+    % === Voxel 2: three compartments of with separate (random) orientations of stroma fibres
+    
+    
+    Nreps = 1000;
+    
+    V2_avgsignals = zeros(Nreps, 1);
+    
+    for indx = 1:Nreps
+    
+    
+        R1 = rotmat(2*pi*rand, acos(2*rand-1), 2*pi*rand);
+        R2 = rotmat(2*pi*rand, acos(2*rand-1), 2*pi*rand);
+        R3 = rotmat(2*pi*rand, acos(2*rand-1), 2*pi*rand);
+        
+        
+        V2_signals = zeros(size(Directions, 1), 1);
+        
+        for dindx = 1:size(Directions,1)
+        
+            bvec = sqrt(bval)*Directions(dindx,:)';
+        
+            V2_signals(dindx) = (1/3)*exp(-bvec'*(R1*V1_Dtensor*R1')*bvec) + ...
+                                (1/3)*exp(-bvec'*(R2*V1_Dtensor*R2')*bvec) + ...
+                                (1/3)*exp(-bvec'*(R3*V1_Dtensor*R3')*bvec);
+        
+        end
+        
+        V2_avgsignals(indx) = mean(V2_signals);
+    
+    
+    end
+    
+    std(V2_avgsignals)
+    boxplot(V2_avgsignals, Positions=bval/1000)
+    hold on
+    scatter(bval/1000+0.1, V1_avgsignal, '*', MarkerEdgeColor= [0    0.4470    0.7410])
+    text( ...
+        bval/1000-0.05, ...
+        max(V2_avgsignals)+0.03, ...
+        ['\mu = ' num2str(mean(V2_avgsignals)) '\newline\sigma = ' num2str(std(V2_avgsignals))], ...
+        FontSize = 8)
+
+end
+
+
+
+ylim([0.18,0.65])
+xlim([0.8, 2.25])
+xticks(1:0.25:2)
+xticklabels({'1000', '1250', '1500', '1750', '2000'})
+title(['D_{para} = ' num2str(D_para*1e3) ' \mum^2/ms, D_{perp} = ' num2str(D_perp*1e3) ' \mum^2/ms'])
+xlabel('b value (s/mm^2)')
+ylabel('Simulated direction-averaged signal')
+grid on
+saveas(f, fullfile(projectfolder, 'Figures', 'Supplementary', 'dMRI_anisotropy_effects.png'))
+
+%% Rotation matrix
+
+function R = rotmat(a,b,c)
+
+    % Rotate by angles a, b, c about x, y, and z axes (in that order)
+
+    Rx = [1 0 0; 0 cos(a) -sin(a); 0 sin(a) cos(a)];
+    Ry = [cos(b) 0 sin(b); 0 1 0; -sin(b) 0 cos(b)];
+    Rz = [cos(c) -sin(c) 0; sin(c) cos(c) 0; 0 0 1];
+
+    R = Rz*Ry*Rx;
+
+
+end

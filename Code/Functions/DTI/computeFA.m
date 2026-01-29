@@ -10,6 +10,8 @@ function FA = computeFA(D_tensor)
 
     [Nx, Ny, Nz, ~] = size(D_tensor);
     FA = zeros(Nx, Ny, Nz);  % Preallocate FA map
+    D_para = zeros(Nx, Ny, Nz);
+    D_perp = zeros(Nx, Ny, Nz);
 
     % Loop over each voxel
     for x = 1:Nx
@@ -25,11 +27,14 @@ function FA = computeFA(D_tensor)
                     
                     % Compute eigenvalues of the tensor
                     lambda = eig(D);
-                    
+
                     % Ensure positive eigenvalues (to avoid numerical issues)
                     if all(lambda > 0)
                         MD = mean(lambda);  % Mean diffusivity
                         FA(x, y, z) = sqrt(3/2) * sqrt(sum((lambda - MD).^2)) / sqrt(sum(lambda.^2));
+
+                        D_para(x,y,z) = max(lambda);
+                        D_perp(x,y,z) = mean(lambda(lambda~=max(lambda)));
                     end
                 end
             end
