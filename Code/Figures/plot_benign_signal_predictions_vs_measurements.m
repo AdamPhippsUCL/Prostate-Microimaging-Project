@@ -34,7 +34,7 @@ bval = scheme(seriesindx).bval;
 DELTA = scheme(seriesindx).DELTA;
 
 % Load signals + extras
-folder =  fullfile(projectfolder, 'Outputs', 'Signals');
+folder =  fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample');
 COMPOSITION = load(fullfile(folder, "COMP.mat")).COMP;
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
 Measured = load(fullfile(folder, SeriesDescription, "Measured.mat")).Measured;
@@ -74,7 +74,7 @@ lowerRL = mean(diff)-1.96*std(diff);
 
 % Save residual limits
 RL = [bias, lowerRL, upperRL];
-RLfolder = fullfile(projectfolder, 'Outputs', 'Signals', SeriesDescription);
+RLfolder = fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample', SeriesDescription);
 mkdir(RLfolder);
 save(fullfile(RLfolder, 'BenignRL.mat'), 'RL');
 

@@ -7,8 +7,8 @@ projectfolder = pwd;
 
 % Samples
 
-SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
-multisample = true;
+% SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
+% multisample = true;
 
 SampleNames = {'20260128_UQ10'};
 multisample = false;
@@ -38,8 +38,7 @@ for seriesindx = 2:length(SeriesDescriptions)
     
     bval = scheme(seriesindx).bval;
     DELTA = scheme(seriesindx).DELTA;
-    
-
+   
     % Load signal measurements (from benign processing)
     signals = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'signals.mat')).signals;
     signals = squeeze(signals(:,seriesindx,1));
@@ -47,8 +46,6 @@ for seriesindx = 2:length(SeriesDescriptions)
     % R2 value
     RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
     R2 = RESULTS(seriesindx).R2;
-
-
     
     % Initialise arrays
     SampleNums = [];
@@ -62,7 +59,7 @@ for seriesindx = 2:length(SeriesDescriptions)
         SampleName = SampleNames{sampleindx};
 
         samplenum = SampleName(end);
-        if strcmp(samplenum, '0')
+        if strcmp(SampleName(end-4), '_')
             samplenum = SampleName(end-1:end);
         end
     

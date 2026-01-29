@@ -14,7 +14,7 @@ Benign = {'4N', '5B', '5M', '5N', '6B',  '6M', '7M', '7N', '8B', '8M', '8N', '7B
 group = 'Cancer_G4';
 
 % Image
-seriesindx =2;
+seriesindx =11;
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
     'STEAM_ShortDELTA_15 (DS)',...
@@ -35,7 +35,7 @@ bval = scheme(seriesindx).bval;
 DELTA = scheme(seriesindx).DELTA;
 
 % Load signals + extras
-folder =  fullfile(projectfolder, 'Outputs', 'Signals');
+folder =  fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample');
 COMP = load(fullfile(folder, "COMP.mat")).COMP;
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
 Measured = load(fullfile(folder, SeriesDescription, "Measured.mat")).Measured;
@@ -129,7 +129,7 @@ COMP = COMP(bool, :);
 diff = (Measure-Pred);
 
 % Load Benign RL
-RLfolder = fullfile(projectfolder, 'Outputs', 'Signals', SeriesDescription);
+RLfolder = fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample', SeriesDescription);
 BenignRL = load(fullfile(RLfolder, 'BenignRL.mat')).RL;
 bias = BenignRL(1);
 lowerRL = BenignRL(2);
