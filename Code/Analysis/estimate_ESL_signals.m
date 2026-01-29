@@ -62,99 +62,138 @@ for sindx = 1:length(SampleNames)
     szbase = size(EPITHELIUM);
 
 
-    % == Diffuion imaging data preprocessing
+    % MOVED TO A SEPARATE SCRIPT
+    % ========================================================================================================
+
+    % % == Diffuion imaging data preprocessing
+    % 
+    % ImageArrays = struct();
+    % DINFOS = struct();
+    % 
+    % for seriesindx = 1:length(SeriesDescriptions)
+    % 
+    %     SeriesDescription = SeriesDescriptions{seriesindx};
+    % 
+    %     thisfolder = fullfile(ImagingDataFolder, samplename, SeriesDescription);
+    % 
+    %     ImageArray = load(fullfile(thisfolder, 'axialImageArray.mat')).ImageArray;
+    %     dinfo = load(fullfile(thisfolder, 'axialdinfo.mat')).dinfo;
+    % 
+    %     % Append to structures
+    %     DINFOS(seriesindx).dinfo = dinfo;
+    %     ImageArrays(seriesindx).ImageArray = ImageArray;
+    % 
+    % end
+    % 
+    % szimg = size(ImageArray, 1:3);
+    % IMGS = ones([Nimg, szimg]);
+    % 
+    % % seriesindx = 1 used for data normalisation
+    % img = ImageArrays(1).ImageArray;
+    % dinfo = DINFOS(1).dinfo;
+    % bvals = [dinfo(:).DiffusionBValue];
+    % b0bools = (bvals==0);
+    % b0imgs = img(:,:,:,b0bools);
+    % b0img = mean(b0imgs,4);
+    % 
+    % b0prctiles = [
+    %     prctile(b0img(:), 10),...
+    %     prctile(b0img(:), 20),...
+    %     prctile(b0img(:), 30),...
+    %     prctile(b0img(:), 40),...
+    %     prctile(b0img(:), 50),...
+    %     prctile(b0img(:), 60),...
+    %     prctile(b0img(:), 70),...
+    %     prctile(b0img(:), 80),...
+    %     prctile(b0img(:), 90),...
+    % ];
+    % 
+    % 
+    % % seriesindx > 1 used for diffusion data
+    % for seriesindx = 2:length(SeriesDescriptions)
+    % 
+    %     % Load image
+    %     img = ImageArrays(seriesindx).ImageArray;
+    % 
+    %     % Load dinfo
+    %     dinfo = DINFOS(seriesindx).dinfo;
+    %     bvals = [dinfo(:).DiffusionBValue];
+    % 
+    %     % b0 imgs
+    %     b0bools = (bvals==0);
+    %     b0imgs = img(:,:,:,b0bools);
+    %     thisb0img = mean(b0imgs,4);
+    % 
+    %     thisb0prctiles = [
+    %         prctile(thisb0img(:), 10),...
+    %         prctile(thisb0img(:), 20),...
+    %         prctile(thisb0img(:), 30),...
+    %         prctile(thisb0img(:), 40),...
+    %         prctile(thisb0img(:), 50),...
+    %         prctile(thisb0img(:), 60),...
+    %         prctile(thisb0img(:), 70),...
+    %         prctile(thisb0img(:), 80),...
+    %         prctile(thisb0img(:), 90),...
+    %     ];
+    % 
+    %     p = polyfit(b0prctiles, thisb0prctiles, 1);  
+    % 
+    %     % b imgs
+    %     bbools = (bvals > 0);
+    %     bimgs = img(:,:,:,bbools);
+    %     bimg = mean(bimgs,4);
+    %     bval = bvals(find(bbools,1));
+    % 
+    %     normimg = (1/p(1))*(bimg./(b0img));
+    %     IMGS(seriesindx,:,:,:) =  normimg;
+    % 
+    %     % Save normalized image
+    %     ImageArray = normimg;
+    %     save(fullfile(ImagingDataFolder, samplename, SeriesDescriptions{seriesindx}, 'normalisedImageArray.mat'), 'ImageArray')
+    % 
+    % 
+    % end
+    % 
+    % clear DINFOS
+    % clear ImageArrays
+
+
+
+
+    % ===============================================================================================
+
     
-    ImageArrays = struct();
-    DINFOS = struct();
-    
-    for seriesindx = 1:length(SeriesDescriptions)
-    
-        SeriesDescription = SeriesDescriptions{seriesindx};
-    
-        thisfolder = fullfile(ImagingDataFolder, samplename, SeriesDescription);
-    
-        ImageArray = load(fullfile(thisfolder, 'axialImageArray.mat')).ImageArray;
-        dinfo = load(fullfile(thisfolder, 'axialdinfo.mat')).dinfo;
-    
-        % Append to structures
-        DINFOS(seriesindx).dinfo = dinfo;
-        ImageArrays(seriesindx).ImageArray = ImageArray;
-    
-    end
-    
-    szimg = size(ImageArray, 1:3);
+
+    % ======= Load normalised images
+
+    % b=0 image
+    seriesindx = 1;
+    SeriesDescription = SeriesDescriptions{seriesindx};
+    thisfolder = fullfile(ImagingDataFolder, samplename, SeriesDescription);
+    b0img = load(fullfile(thisfolder, 'axialImageArray.mat')).ImageArray;  
+    szimg = size(b0img, 1:3);
+
+
+    % Initialise array for normalised images
     IMGS = ones([Nimg, szimg]);
-    
-    % seriesindx = 1 used for data normalisation
-    img = ImageArrays(1).ImageArray;
-    dinfo = DINFOS(1).dinfo;
-    bvals = [dinfo(:).DiffusionBValue];
-    b0bools = (bvals==0);
-    b0imgs = img(:,:,:,b0bools);
-    b0img = mean(b0imgs,4);
-    
-    b0prctiles = [
-        prctile(b0img(:), 10),...
-        prctile(b0img(:), 20),...
-        prctile(b0img(:), 30),...
-        prctile(b0img(:), 40),...
-        prctile(b0img(:), 50),...
-        prctile(b0img(:), 60),...
-        prctile(b0img(:), 70),...
-        prctile(b0img(:), 80),...
-        prctile(b0img(:), 90),...
-    ];
-   
-    
-    % seriesindx > 1 used for diffusion data
+
     for seriesindx = 2:length(SeriesDescriptions)
-    
-        % Load image
-        img = ImageArrays(seriesindx).ImageArray;
-    
-        % Load dinfo
-        dinfo = DINFOS(seriesindx).dinfo;
-        bvals = [dinfo(:).DiffusionBValue];
-    
-        % b0 imgs
-        b0bools = (bvals==0);
-        b0imgs = img(:,:,:,b0bools);
-        thisb0img = mean(b0imgs,4);
-    
-        thisb0prctiles = [
-            prctile(thisb0img(:), 10),...
-            prctile(thisb0img(:), 20),...
-            prctile(thisb0img(:), 30),...
-            prctile(thisb0img(:), 40),...
-            prctile(thisb0img(:), 50),...
-            prctile(thisb0img(:), 60),...
-            prctile(thisb0img(:), 70),...
-            prctile(thisb0img(:), 80),...
-            prctile(thisb0img(:), 90),...
-        ];
 
-        p = polyfit(b0prctiles, thisb0prctiles, 1);  
+        SeriesDescription = SeriesDescriptions{seriesindx};
+        thisfolder = fullfile(ImagingDataFolder, samplename, SeriesDescription);
 
-        % b imgs
-        bbools = (bvals > 0);
-        bimgs = img(:,:,:,bbools);
-        bimg = mean(bimgs,4);
-        bval = bvals(find(bbools,1));
-
-        normimg = (1/p(1))*(bimg./(b0img));
+        % Load normalised image array
+        normimg = load(fullfile(thisfolder, 'normalisedImageArray.mat')).ImageArray;
         IMGS(seriesindx,:,:,:) =  normimg;
 
-        % Save normalized image
-        ImageArray = normimg;
-        save(fullfile(ImagingDataFolder, samplename, SeriesDescriptions{seriesindx}, 'normalisedImageArray.mat'), 'ImageArray')
-
-
     end
 
-    clear DINFOS
-    clear ImageArrays
 
-    % =========================== MOVED TO SEPARATE SCRIPT
+    disp('')
+
+
+
+    % MOVED TO SEPARATE SCRIPT ==============================================================================================
 
     % % == Make sample mask
     % 
@@ -335,8 +374,10 @@ for sindx = 1:length(SampleNames)
     % save(fullfile(folder, 'BMASK.mat'), 'BMASK');
 
 
-    % =========================================
+    % ==============================================================================================
     
+
+
 
     szmap = szimg;
 
@@ -378,6 +419,8 @@ for sindx = 1:length(SampleNames)
     samplenums = [samplenums; (3*sindx-2)*this_bmask + (3*sindx-1)*this_mmask + (3*sindx)*this_nmask];
     composition = [composition; thiscomposition];
     imgs = [imgs, thisimgs];
+
+    
 
 end
 

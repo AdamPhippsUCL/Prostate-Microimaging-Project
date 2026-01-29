@@ -9,7 +9,7 @@ projectfolder = pwd;
 SampleName = '20260128_UQ10';
 
 % DICOM folder
-DICOMfolder = "C:\Users\adam\OneDrive - University College London\UCL PhD\PhD\Projects\USyd Microimaging Project\Imaging Data\20260128_141531_RB_UQ010_RB_UQ010_1_1\36 (SE b0)\pdata\1\dicom";
+DICOMfolder = "C:\Users\adam\OneDrive - University College London\UCL PhD\PhD\Projects\USyd Microimaging Project\Imaging Data\20260128_141531_RB_UQ010_RB_UQ010_1_1\39 (STEAM b1500 DELTA 80)\pdata\1\dicom";
 
 % Imaging data folder (to save MAT images)
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
