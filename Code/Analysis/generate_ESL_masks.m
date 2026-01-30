@@ -207,7 +207,7 @@ switch SampleName
 
         MGElow = 1.5e-7;
         MGEhigh = 5e-7;
-        dwFAlow = 14e-5;
+        dwFAlow = 15e-5;
 
         T2low = 44;
 
@@ -245,7 +245,7 @@ displaymasks(:,:,:,1) = logical(EPITHELIUM);
 displaymasks(:,:,:,2) = logical(STROMA);
 displaymasks(:,:,:,3) = logical(LUMEN);
 
-sl=120;
+sl=100;
 cols = 1:640;%20:620;
 rows = 30:210;%35:210;
 f=figure;

@@ -5,12 +5,20 @@ projectfolder = pwd;
 
 %% Load modelling results
 
+
+samplename = 'Multi-sample';
+
 % Sample groups
-Benign = {'4N', '5B', '5M', '5N', '6B',  '6M', '7M', '7N', '8B', '8M', '8N', '7B', '9B', '9N' };
+Benign = {'4N', ...
+    '5B', '5M', '5N',...
+    '6B',  '6M',...
+    '7M', '7N', '7B',...
+    '8B', '8M', '8N',...
+    '9B', '9N' };
 Cancer_3 = {'4B', '4M'};
 Cancer_4 = {'6N'};
 
-folder =  fullfile(projectfolder, 'Outputs', 'Signals');
+folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 COMPOSITION = load(fullfile(folder, "COMP.mat")).COMP;
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
 
@@ -30,18 +38,18 @@ fittingtechnique = 'LSQ';
 output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
 
 % Load parameter estimates from measured signals
-measured_fs = load(fullfile(output_folder, 'Measured', ModelName, 'fs')).measured_fs;
-measured_Db = load(fullfile(output_folder, 'Measured',  ModelName, 'Db')).measured_Db;
-measured_R = load(fullfile(output_folder, 'Measured',  ModelName, 'R')).measured_R;
+measured_fs = load(fullfile(output_folder, 'Measured', samplename, ModelName, 'fs')).measured_fs;
+measured_Db = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'Db')).measured_Db;
+measured_R = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'R')).measured_R;
 
 measured_fs = measured_fs(Bools);
 measured_Db = measured_Db(Bools);
 measured_R = measured_R(Bools);
 
 % Load parameter estimates from predicted signals
-pred_fs = load(fullfile(output_folder, 'Predicted', ModelName, 'fs')).pred_fs;
-pred_Db = load(fullfile(output_folder, 'Predicted', ModelName, 'Db')).pred_Db;
-pred_R = load(fullfile(output_folder, 'Predicted',  ModelName, 'R')).pred_R;
+pred_fs = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'fs')).pred_fs;
+pred_Db = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'Db')).pred_Db;
+pred_R = load(fullfile(output_folder, 'Predicted',  samplename, ModelName, 'R')).pred_R;
 
 pred_fs = pred_fs(Bools);
 pred_Db = pred_Db(Bools);
@@ -57,12 +65,12 @@ fittingtechnique = 'LSQ';
 output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
 
 % Load parameter estimates from measured signals
-measured_ADC = load(fullfile(output_folder, 'Measured',  ModelName, 'D')).measured_D;
+measured_ADC = load(fullfile(output_folder, 'Measured', samplename,  ModelName, 'D')).measured_D;
 
 measured_ADC = measured_ADC(Bools);
 
 % Load parameter estimates from predicted signals
-pred_ADC = load(fullfile(output_folder, 'Predicted', ModelName, 'D')).pred_D;
+pred_ADC = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'D')).pred_D;
 
 pred_ADC = pred_ADC(Bools);
 
@@ -105,7 +113,7 @@ ax.FontSize = 12;
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals Sphere Fraction.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals Sphere Fraction.png']))
 
 
 % Per sample plot
@@ -170,7 +178,7 @@ ax.FontSize = 12;
 ax.YGrid = 'on';
 ax.Box = 'off';
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals Sphere Fraction.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals Sphere Fraction.png']))
 
 
 
@@ -213,7 +221,7 @@ ax.FontSize = 12;
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals Db.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals Db.png']))
 
 
 % Per sample plot
@@ -277,7 +285,7 @@ ax.FontSize = 12;
 ax.YGrid = 'on';
 ax.Box = 'off';
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals Db.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals Db.png']))
 
 
 
@@ -323,7 +331,7 @@ ax.FontSize = 12;
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals R.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals R.png']))
 
 % Per sample plot
 
@@ -386,7 +394,7 @@ ax.FontSize = 12;
 ax.YGrid = 'on';
 ax.Box = 'off';
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals R.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals R.png']))
 
 
 %% ADC
@@ -427,7 +435,7 @@ ax.FontSize = 12;
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals ADC.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Benign Residuals ADC.png']))
 
 
 % Per sample plot
@@ -491,4 +499,4 @@ ax.FontSize = 12;
 ax.YGrid = 'on';
 ax.Box = 'off';
 
-saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals ADC.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', ['Samples Residuals ADC.png']))

@@ -5,17 +5,20 @@ projectfolder = pwd;
 
 %% Load modelling results
 
+samplename = '20260128_UQ10';
+
 % Sample groups
 Benign = {'4N', '5B', '5M', '5N', '6B',  '6M', '7M', '7N', '8B', '8M', '8N', '7B', '9B', '9N' };
-Cancer_G3 = {'4B', '4M'};
-Cancer_G4 = {'6N'};
+Cancer_G33 = {'4B', '4M'};
+Cancer_G44 = {'6N'};
+Cancer_G34 = {'10B'};
 
-folder =  fullfile(projectfolder, 'Outputs', 'Signals');
+folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 COMP = load(fullfile(folder, "COMP.mat")).COMP;
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
 
 % Cancer samples
-group = 'Cancer_G3';
+group = 'Cancer_G34';
 Bools = ismember(SampleNums, eval(group));
 COMP = COMP(Bools, :);
 
@@ -34,18 +37,18 @@ fittingtechnique = 'LSQ';
 output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
 
 % Load parameter estimates from measured signals
-measured_fs = load(fullfile(output_folder, 'Measured', ModelName, 'fs')).measured_fs;
-measured_Db = load(fullfile(output_folder, 'Measured',  ModelName, 'Db')).measured_Db;
-measured_R = load(fullfile(output_folder, 'Measured',  ModelName, 'R')).measured_R;
+measured_fs = load(fullfile(output_folder, 'Measured', samplename, ModelName, 'fs')).measured_fs;
+measured_Db = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'Db')).measured_Db;
+measured_R = load(fullfile(output_folder, 'Measured',  samplename,  ModelName, 'R')).measured_R;
 
 measured_fs = measured_fs(Bools);
 measured_Db = measured_Db(Bools);
 measured_R = measured_R(Bools);
 
 % Load parameter estimates from predicted signals
-pred_fs = load(fullfile(output_folder, 'Predicted', ModelName, 'fs')).pred_fs;
-pred_Db = load(fullfile(output_folder, 'Predicted', ModelName, 'Db')).pred_Db;
-pred_R = load(fullfile(output_folder, 'Predicted',  ModelName, 'R')).pred_R;
+pred_fs = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'fs')).pred_fs;
+pred_Db = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'Db')).pred_Db;
+pred_R = load(fullfile(output_folder, 'Predicted',  samplename, ModelName, 'R')).pred_R;
 
 pred_fs = pred_fs(Bools);
 pred_Db = pred_Db(Bools);
@@ -70,12 +73,12 @@ fittingtechnique = 'LSQ';
 output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
 
 % Load parameter estimates from measured signals
-measured_ADC = load(fullfile(output_folder, 'Measured',  ModelName, 'D')).measured_D;
+measured_ADC = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'D')).measured_D;
 
 measured_ADC = measured_ADC(Bools);
 
 % Load parameter estimates from predicted signals
-pred_ADC = load(fullfile(output_folder, 'Predicted', ModelName, 'D')).pred_D;
+pred_ADC = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'D')).pred_D;
 
 pred_ADC = pred_ADC(Bools);
 
@@ -149,7 +152,7 @@ uistack(s, "bottom")
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals fs.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals fs.png']))
 
 
 %% BALL-COMPARTMENT DIFFUSIVITY
@@ -217,7 +220,7 @@ uistack(s, "bottom")
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals Db.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals Db.png']))
 
 
 %% SPHERE RADIUS
@@ -289,7 +292,7 @@ uistack(s, "bottom")
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals R.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals R.png']))
 
 %% ADC
 
@@ -354,4 +357,4 @@ uistack(s, "bottom")
 
 f.Position = [480   358   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals ADC.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals ADC.png']))

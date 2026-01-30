@@ -5,6 +5,10 @@ projectfolder = pwd;
 
 %% Image details
 
+% Sample(s) names
+samplename = ...'Multi-sample';
+             '20260128_UQ10';
+
 % Images
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
@@ -22,7 +26,7 @@ SeriesDescriptions = {
 scheme = load(fullfile(projectfolder, "Schemes", "20250224_UQ4 AllDELTA.mat")).scheme;
 nscheme = length(scheme);
 
-folder =  fullfile(projectfolder, 'Outputs', 'Signals');
+folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 COMP = load(fullfile(folder, "COMP.mat")).COMP;
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
 Nvoxel = length(SampleNums);
@@ -52,8 +56,6 @@ end
 
 
 %% Run ADC modelling
-
-% ============= ADC model
 
 modelname = 'ADC';
 fittingtechnique = 'LSQ';
@@ -88,9 +90,10 @@ Y = reshape(MeasuredSignals, [Nvoxel, 1 , nscheme]);
     );
 
 % Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Measured', modelname);
+folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Measured', samplename, modelname);
 mkdir(folder);
 save(fullfile(folder, 'D.mat'), 'measured_D')
+save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
 
 % == PREDICTED
 
@@ -112,10 +115,10 @@ Y(:,:,2:end) = Y(:,:,2:end)./(sum(COMP,2));
     );
 
 % Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Predicted', modelname);
+folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Predicted', samplename, modelname);
 mkdir(folder);
 save(fullfile(folder, 'D.mat'), 'pred_D')
-
+save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
 
 
 
@@ -156,13 +159,13 @@ Y(:,:,2:end) = Y(:,:,2:end)./(sum(COMP,2));
     );
 
 % Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Predicted', modelname);
+folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Predicted', samplename, modelname);
 mkdir(folder);
 save(fullfile(folder, 'fs.mat'), 'pred_fs')
 save(fullfile(folder, 'Db.mat'), 'pred_Db')
 save(fullfile(folder, 'Ds.mat'), 'pred_Ds')
 save(fullfile(folder, 'R.mat'), 'pred_R')
-
+save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
 
 % == MEASURED
 
@@ -181,11 +184,11 @@ Y = reshape(MeasuredSignals, [Nvoxel, 1 , nscheme]);
     );
 
 % Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Measured', modelname);
+folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Measured', samplename, modelname);
 mkdir(folder);
 save(fullfile(folder, 'fs.mat'), 'measured_fs')
 save(fullfile(folder, 'Db.mat'), 'measured_Db')
 save(fullfile(folder, 'Ds.mat'), 'measured_Ds')
 save(fullfile(folder, 'R.mat'), 'measured_R')
-
+save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
 
