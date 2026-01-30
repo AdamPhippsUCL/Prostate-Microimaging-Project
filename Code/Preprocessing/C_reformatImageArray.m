@@ -12,7 +12,7 @@ ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 SampleName = '20260128_UQ10';
 
 % Series description
-SeriesDescription =  'STEAM_LongDELTA_80';
+SeriesDescription =  'STEAM_ShortDELTA_50';
 
 
 %% Load image array and DICOM 

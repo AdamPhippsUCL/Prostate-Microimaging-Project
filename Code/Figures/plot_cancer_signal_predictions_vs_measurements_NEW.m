@@ -5,7 +5,8 @@ projectfolder = pwd;
 
 %% Sample and image details
 
-SampleName = '20250414_UQ6';
+SampleName = ...'20250414_UQ6';
+             '20260128_UQ10';
 
 % Sample groups
 Cancer_G33 = {'4B', '4M'};
@@ -18,10 +19,10 @@ Benign = {'4N', ...
         '8B', '8M', '8N',...
         '9B', '9N' };
 
-group = 'Cancer_G44';
+group = 'Cancer_G34';
 
 % Image
-seriesindx =9;
+seriesindx =11;
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
     'STEAM_ShortDELTA_15 (DS)',...

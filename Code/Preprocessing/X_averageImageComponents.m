@@ -1,4 +1,5 @@
 % Script to average over 4th dimension component of an image 
+% (mainly for MGE)
 
 clear;
 projectfolder = pwd;
