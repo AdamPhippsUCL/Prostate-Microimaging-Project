@@ -149,7 +149,7 @@ switch samplename
     case '20260128_UQ10'
 
         % Cylinder centred at (125, 113.5), radius 70 (1.4mm)
-        samplemask = (Xs-125).^2 + (Ys-113.5).^2 <70^2;
+        samplemask = (Xs-126).^2 + (Ys-113.5).^2 <71^2;
 
         % == Define masks for individual samples
 
@@ -157,6 +157,20 @@ switch samplename
         Mmask = samplemask.*and(Zs>=174, Zs<464);
         Nmask = samplemask.*and(Zs>=464, Zs<624);
 
+        disp('')
+
+
+
+    case '20260315_UQ11'
+
+        % Cylinder centred at (129, 115.5), radius 72 (1.44mm)
+        samplemask = (Xs-130).^2 + (Ys-115.5).^2 <72^2;
+
+        % == Define masks for individual samples
+
+        Bmask = samplemask.*and(Zs>=48, Zs<250);
+        Mmask = samplemask.*and(Zs>=250, Zs<250);
+        Nmask = samplemask.*and(Zs>=310, Zs<520);
 
 
 end

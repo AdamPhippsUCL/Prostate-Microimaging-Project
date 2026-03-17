@@ -5,92 +5,137 @@ projectfolder = pwd;
 
 %% Load modelling results
 
-samplename = '20260128_UQ10';
+samplenames = {...'20250224_UQ4'
+            '20250414_UQ6'
+             ...'20260128_UQ10'
+             ...'20260315_UQ11'
+             };
+
+group = 'Specific_Samples'; %Cancer_G33';
 
 % Sample groups
 Benign = {'4N', '5B', '5M', '5N', '6B',  '6M', '7M', '7N', '8B', '8M', '8N', '7B', '9B', '9N' };
-Cancer_G33 = {'4B', '4M'};
+Cancer_G33 = {'4B', '4M', '11N', '11N'};
 Cancer_G44 = {'6N'};
-Cancer_G34 = {'10B'};
+Cancer_G34 = {'10B', '10B', '10M'};
 
-folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
-COMP = load(fullfile(folder, "COMP.mat")).COMP;
-SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
-
-% Cancer samples
-group = 'Cancer_G34';
-Bools = ismember(SampleNums, eval(group));
-COMP = COMP(Bools, :);
-
-% Remove voxels with low epithelium (stroma and lumen not of interest here)
-bool = (COMP(:,1)>0.4);
-COMP = COMP(bool, :);
+Specific_Samples = {'6N'};
 
 
-% =========== Ball+Sphere
+% Ball+Sphere
+Pred_fs = [];
+Pred_Db = [];
+Pred_R = [];
+Measured_fs = [];
+Measured_Db = [];
+Measured_R = [];
 
-ModelName = 'Ball+Sphere';
-schemename = '20250224_UQ4 AllDELTA';
-fittingtechnique = 'LSQ';
+% ADC
+Pred_ADC = [];
+Measured_ADC = [];
 
-% Output folder
-output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
+% COMPOSITION
+COMP = [];
 
-% Load parameter estimates from measured signals
-measured_fs = load(fullfile(output_folder, 'Measured', samplename, ModelName, 'fs')).measured_fs;
-measured_Db = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'Db')).measured_Db;
-measured_R = load(fullfile(output_folder, 'Measured',  samplename,  ModelName, 'R')).measured_R;
+for sindx = 1:length(samplenames)
 
-measured_fs = measured_fs(Bools);
-measured_Db = measured_Db(Bools);
-measured_R = measured_R(Bools);
+    samplename = samplenames{sindx};
 
-% Load parameter estimates from predicted signals
-pred_fs = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'fs')).pred_fs;
-pred_Db = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'Db')).pred_Db;
-pred_R = load(fullfile(output_folder, 'Predicted',  samplename, ModelName, 'R')).pred_R;
+    folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
+    thisCOMP = load(fullfile(folder, "COMP.mat")).COMP;
+    thisSampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
+    
+    % Cancer samples    
+    Bools = ismember(thisSampleNums, eval(group));
+    thisCOMP = thisCOMP(Bools, :);
+    
+    % Remove voxels with low epithelium (stroma and lumen not of interest here)
+    bool = (thisCOMP(:,1)>0.3);
+    thisCOMP = thisCOMP(bool, :);
+    
+    COMP = [COMP; thisCOMP];
 
-pred_fs = pred_fs(Bools);
-pred_Db = pred_Db(Bools);
-pred_R = pred_R(Bools);
 
-% Only high epithelium voxels
-pred_fs = pred_fs(bool);
-pred_Db = pred_Db(bool);
-pred_R = pred_R(bool);
+    % =========== Ball+Sphere
+    
+    ModelName = 'Ball+Sphere';
+    schemename = '20250224_UQ4 AllDELTA';
+    fittingtechnique = 'LSQ';
+    
+    % Output folder
+    output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
+    
+    % Load parameter estimates from measured signals
+    measured_fs = load(fullfile(output_folder, 'Measured', samplename, ModelName, 'fs')).measured_fs;
+    measured_Db = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'Db')).measured_Db;
+    measured_R = load(fullfile(output_folder, 'Measured',  samplename,  ModelName, 'R')).measured_R;
+    
+    measured_fs = measured_fs(Bools);
+    measured_Db = measured_Db(Bools);
+    measured_R = measured_R(Bools);
+    
+    % Load parameter estimates from predicted signals
+    pred_fs = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'fs')).pred_fs;
+    pred_Db = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'Db')).pred_Db;
+    pred_R = load(fullfile(output_folder, 'Predicted',  samplename, ModelName, 'R')).pred_R;
+    
+    pred_fs = pred_fs(Bools);
+    pred_Db = pred_Db(Bools);
+    pred_R = pred_R(Bools);
+    
+    % Only high epithelium voxels
+    pred_fs = pred_fs(bool);
+    pred_Db = pred_Db(bool);
+    pred_R = pred_R(bool);
+    
+    measured_fs = measured_fs(bool);
+    measured_Db = measured_Db(bool);
+    measured_R = measured_R(bool);
 
-measured_fs = measured_fs(bool);
-measured_Db = measured_Db(bool);
-measured_R = measured_R(bool);
+    Pred_fs = [Pred_fs; pred_fs];
+    Pred_Db = [Pred_Db; pred_Db];
+    Pred_R = [Pred_R; pred_R];
 
-% =========== ADC
+    Measured_fs = [Measured_fs; measured_fs];
+    Measured_Db = [Measured_Db; measured_Db];
+    Measured_R = [Measured_R; measured_R];
+    
 
-ModelName = 'ADC';
-schemename = '20250224_UQ4 AllDELTA';
-fittingtechnique = 'LSQ';
+    % =========== ADC
+    
+    ModelName = 'ADC';
+    schemename = '20250224_UQ4 AllDELTA';
+    fittingtechnique = 'LSQ';
+    
+    % Output folder
+    output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
+    
+    % Load parameter estimates from measured signals
+    measured_ADC = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'D')).measured_D;
+    
+    measured_ADC = measured_ADC(Bools);
+    
+    % Load parameter estimates from predicted signals
+    pred_ADC = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'D')).pred_D;
+    
+    pred_ADC = pred_ADC(Bools);
+    
+    % Remove voxels with low epithelium
+    pred_ADC = pred_ADC(bool);
+    measured_ADC = measured_ADC(bool);
 
-% Output folder
-output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
+    Pred_ADC = [Pred_ADC; pred_ADC];
+    Measured_ADC = [Measured_ADC; measured_ADC];
 
-% Load parameter estimates from measured signals
-measured_ADC = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'D')).measured_D;
 
-measured_ADC = measured_ADC(Bools);
+end
 
-% Load parameter estimates from predicted signals
-pred_ADC = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'D')).pred_D;
-
-pred_ADC = pred_ADC(Bools);
-
-% Remove voxels with low epithelium
-pred_ADC = pred_ADC(bool);
-measured_ADC = measured_ADC(bool);
 
 
 
 %% SPHERE FRACTION
 
-fs_diff = (measured_fs-pred_fs);
+fs_diff = (Measured_fs-Pred_fs);
 
 % Load Benign RL
 RLfolder =  fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'Ball+Sphere');
@@ -100,7 +145,7 @@ fs_lowerRL = BenignRL(2);
 fs_upperRL = BenignRL(3);
 
 f=figure;
-scatter(pred_fs, fs_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
+scatter(Pred_fs, fs_diff ,   14, 'filled', 'MarkerFaceAlpha', 0.9, CData=COMP, HandleVisibility='off')
 hold on
 % yline(fs_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
 yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
@@ -157,7 +202,7 @@ f.Position = [680   458   600   380];
 
 %% BALL-COMPARTMENT DIFFUSIVITY
 
-Db_diff = (measured_Db-pred_Db);
+Db_diff = (Measured_Db-Pred_Db);
 
 % Load Benign RL
 RLfolder =  fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'Ball+Sphere');
@@ -167,7 +212,7 @@ Db_lowerRL = BenignRL(2);
 Db_upperRL = BenignRL(3);
 
 f=figure;
-scatter(pred_Db, Db_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
+scatter(Pred_Db, Db_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
 hold on
 % yline(Db_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
 yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
@@ -225,7 +270,7 @@ f.Position = [680   458   600   380];
 
 %% SPHERE RADIUS
 
-R_diff = (measured_R-pred_R);
+R_diff = (Measured_R-Pred_R);
 
 % Load Benign RL
 RLfolder =  fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'Ball+Sphere');
@@ -235,7 +280,7 @@ R_lowerRL = BenignRL(2);
 R_upperRL = BenignRL(3);
 
 f=figure;
-scatter(pred_R, R_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
+scatter(Pred_R, R_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
 hold on
 
 % yline(R_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
@@ -296,7 +341,7 @@ f.Position = [680   458   600   380];
 
 %% ADC
 
-ADC_diff = (measured_ADC-pred_ADC);
+ADC_diff = (Measured_ADC-Pred_ADC);
 
 % Load Benign RL
 RLfolder =  fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'ADC');
@@ -306,7 +351,7 @@ ADC_lowerRL = BenignRL(2);
 ADC_upperRL = BenignRL(3);
 
 f=figure;
-scatter(pred_ADC, ADC_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
+scatter(Pred_ADC, ADC_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
 hold on
 % yline(ADC_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
 yline(ADC_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)

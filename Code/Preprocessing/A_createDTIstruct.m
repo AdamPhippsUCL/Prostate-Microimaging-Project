@@ -12,7 +12,7 @@ ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 ImageType = 'MAT';
 
 % Sample name
-SampleName = '20260128_UQ10';
+SampleName = '20260315_UQ11';
 
 % Series Description
 SeriesDescriptions = {
@@ -82,7 +82,7 @@ for indx = 1:length(SeriesDescriptions)
             end
 
 
-        case {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9', '20260128_UQ10'}
+        case {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9', '20260128_UQ10', '20260315_UQ11'}
             
             switch SeriesDescription
 
@@ -98,7 +98,7 @@ for indx = 1:length(SeriesDescriptions)
                     DiffusionDirection = [0, 0, 0, 0];
                     DiffusionEffBValue = [40.874806178439 40.874806178439 40.874806178439 40.874806178439];
 
-
+                % 
                 % case 'STEAM_DELTA_40'
                 % 
                 %     DiffusionBValue = [0, 1000, 1000, 1000, 1000, 1000, 1000];
@@ -171,7 +171,7 @@ for indx = 1:length(SeriesDescriptions)
                 %         -0.0455274515984108 0.0762042118154156 -0.0175192923446577
                 %         ];
                 %     DiffusionEffBValue = [103.144164345687 2082.77829673617 2062.89852901701 2046.49095792332 2029.39237426483 2044.29256990009 1984.21969891062];
-                % 
+
 
                 case 'STEAM_DELTA_15'
 

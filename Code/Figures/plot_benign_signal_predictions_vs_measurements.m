@@ -93,7 +93,7 @@ xlim([-0.02, 0.62])
 xticks([0:0.1:0.6])
 xlabel('Predicted Signal')
 ylabel('Measured Signal - Predicted Signal')
-title(['b = ' num2str(bval) ' s/mm^2 ; Delta = ' num2str(DELTA) ' ms'])
+title(['b = ' num2str(bval) ' s/mm^2 ; \Delta = ' num2str(DELTA) ' ms'])
 ax = gca();
 ax.FontSize = 12;
 f.Position = [488   242   660   400];
@@ -172,7 +172,7 @@ set(hOut, 'MarkerEdgeColor',[0.4 0.4 0.4], 'Marker','.')
 legend;
 ylabel('Measured Signal - Predicted Signal')
 xlabel('Sample Number')
-title(['b = ' num2str(bval) ' s/mm^2 ; Delta = ' num2str(DELTA) ' ms'])
+title(['b = ' num2str(bval) ' s/mm^2 ; \Delta = ' num2str(DELTA) ' ms'])
 ax.FontSize = 12;
 ax.YGrid = 'on';
 ax.Box = 'off';

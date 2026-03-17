@@ -7,9 +7,10 @@ projectfolder = pwd;
 
 SampleName = ...'20250414_UQ6';
              '20260128_UQ10';
+            ...'20260315_UQ11';
 
 % Sample groups
-Cancer_G33 = {'4B', '4M'};
+Cancer_G33 = {'4B', '4M', '11B', '11N'};
 Cancer_G34 = {'10B', '10M', '10N'};
 Cancer_G44 = {'6N'};
 Benign = {'4N', ...
@@ -22,7 +23,7 @@ Benign = {'4N', ...
 group = 'Cancer_G34';
 
 % Image
-seriesindx =11;
+seriesindx =6;
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
     'STEAM_ShortDELTA_15 (DS)',...
@@ -167,5 +168,5 @@ ax.FontSize = 12;
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', [group ' Signal Residuals b' num2str(bval) '_Delta' num2str(DELTA) '.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', [group ' Signal Residuals b' num2str(bval) '_Delta' num2str(DELTA) '.png']))
 

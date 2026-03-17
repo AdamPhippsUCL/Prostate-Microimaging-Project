@@ -7,7 +7,8 @@ projectfolder = pwd;
 
 % Sample(s) names
 samplename = ...'Multi-sample';
-             '20260128_UQ10';
+                '20260128_UQ10';
+            ...'20260315_UQ11';
 
 % Images
 SeriesDescriptions = {

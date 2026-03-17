@@ -6,11 +6,11 @@ projectfolder = pwd;
 %% Image details
 
 % Sample name
-SampleName = '20260128_UQ10';
+SampleName = '20260315_UQ11';
 
 % Series description
 SeriesDescription = ...'40u_DtiSE_2012_SPOIL10%';
-                       '3D_T2_MSME_match_DTI';
+                      '3D_T2_MSME_match_DTI';
 
 % Use denoised data
 UseDenoisedData = true;

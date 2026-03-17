@@ -5,7 +5,7 @@ projectfolder = pwd;
 
 %% Imaging data
 
-SampleName = '20260128_UQ10';
+SampleName = '20260315_UQ11';
 
 SeriesDescription = '3D_T2_MSME_match_DTI (20 micron)';
 

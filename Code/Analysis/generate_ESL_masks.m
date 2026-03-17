@@ -203,25 +203,14 @@ switch SampleName
         EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
 
 
+
     case '20260128_UQ10'
 
         MGElow = 1.5e-7;
         MGEhigh = 5e-7;
-        dwFAlow = 15e-5;
+        dwFAlow = 14e-5;
 
         T2low = 44;
-
-        % NEW THRESHOLD FOR REVIEW RESPONSE
-        switch thres_alter
-            case 'Lhigh'
-                MGEhigh = (1+frac)*MGEhigh;
-            case 'Llow'
-                MGEhigh = (1-frac)*MGEhigh;
-            case 'Shigh'
-                dwFAlow = (1+frac)*dwFAlow;
-            case 'Slow'
-                dwFAlow = (1-frac)*dwFAlow;
-        end
         
         % STROMA = (dwFA>dwFAlow).*and(MGE<MGEhigh, MGE>MGElow);
         % LUMEN = (MGE>MGEhigh);
@@ -231,6 +220,20 @@ switch SampleName
 
         EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
 
+
+    case '20260315_UQ11'
+
+        MGElow = 2e-8;
+        MGEhigh = 7.6e-8;
+        dwFAlow = 14e-5;
+
+        T2low = 48;
+
+
+        LUMEN = or( (T2>T2low), (MGE>MGEhigh)) ;
+        STROMA = ~logical(LUMEN).*(dwFA>dwFAlow).*and(T2<T2low, MGE>MGElow);
+
+        EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
 
 
 
@@ -245,7 +248,7 @@ displaymasks(:,:,:,1) = logical(EPITHELIUM);
 displaymasks(:,:,:,2) = logical(STROMA);
 displaymasks(:,:,:,3) = logical(LUMEN);
 
-sl=100;
+sl=120;
 cols = 1:640;%20:620;
 rows = 30:210;%35:210;
 f=figure;

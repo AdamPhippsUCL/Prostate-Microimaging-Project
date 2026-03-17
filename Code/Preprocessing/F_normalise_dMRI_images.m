@@ -7,7 +7,7 @@ projectfolder = pwd;
 %% Imaging data
 
 
-samplename = '20260128_UQ10';
+samplename = '20260315_UQ11';
 
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data', 'MAT DN');  
 
