@@ -25,7 +25,7 @@ nscheme = length(scheme);
 components = {'E', 'S'};
 
 modelnames = {
-  % 'ADC',...
+  'ADC',...
   ...'DKI',...
   ...'Sphere',...
   'Ball+Sphere'...
@@ -35,9 +35,9 @@ modelnames = {
 lambda = 0e-3; % Regularisation
 fittingtechnique = 'LSQ';
 
-DisplayPredictions = false;
+DisplayPredictions = true;
 
-DisplayLikelihoodProfiles = true;
+DisplayLikelihoodProfiles = false;
 
 for compindx = 1:length(components)
 

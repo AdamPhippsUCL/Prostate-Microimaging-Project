@@ -6,9 +6,9 @@ projectfolder = pwd;
 %% Load modelling results
 
 samplenames = {...'20250224_UQ4'
-            '20250414_UQ6'
+            ...'20250414_UQ6'
              ...'20260128_UQ10'
-             ...'20260315_UQ11'
+             '20260315_UQ11'
              };
 
 group = 'Specific_Samples'; %Cancer_G33';
@@ -19,7 +19,7 @@ Cancer_G33 = {'4B', '4M', '11N', '11N'};
 Cancer_G44 = {'6N'};
 Cancer_G34 = {'10B', '10B', '10M'};
 
-Specific_Samples = {'6N'};
+Specific_Samples = {'11B'};
 
 
 % Ball+Sphere
@@ -195,7 +195,7 @@ s=surf(X, Y, zeros(size(Y)), C, ...
 uistack(s, "bottom")
 
 
-f.Position = [680   458   600   380];
+f.Position = [680   280   600   380];
 
 % saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals fs.png']))
 

@@ -82,15 +82,20 @@ fs_diff = (measured_fs-pred_fs);
 % Bias
 fs_bias = mean(fs_diff);
 
+
+% Focus on high epithelium for residual limits
+comp_bool = COMP(:,1)>0.0;
+
 % 95% residual limits
-fs_upperRL = fs_bias+1.96*std(fs_diff);
-fs_lowerRL = fs_bias-1.96*std(fs_diff);
+fs_upperRL = fs_bias+1.96*std(fs_diff(comp_bool));
+fs_lowerRL = fs_bias-1.96*std(fs_diff(comp_bool));
+
 
 % Save residual limits
 fs_RL = [fs_bias, fs_lowerRL, fs_upperRL];
 RLfolder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'Ball+Sphere');
 mkdir(RLfolder)
-save(fullfile(RLfolder, 'fs_BenignRL.mat'), 'fs_RL');
+% save(fullfile(RLfolder, 'fs_BenignRL.mat'), 'fs_RL');
 
 f=figure;
 scatter(pred_fs, fs_diff ,  6, 'filled', 'MarkerFaceAlpha', 0.7, CData=COMP, HandleVisibility='off');
