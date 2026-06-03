@@ -35,12 +35,12 @@ s = signals(:,indices,:);
 h3=errorbar(bvals+1*bshift, s(1,:,1), s(1,:,1)-s(1,:,3), s(1,:,4)-s(1,:,1), '--*', LineWidth = lw, color='#EB0000', HandleVisibility='off');
 h4=errorbar(bvals+1*bshift, s(2,:,1), s(2,:,1)-s(2,:,3), s(2,:,4)-s(2,:,1),  '--*', LineWidth = lw, color='#10DE00',  HandleVisibility='off');
 
-h5=plot(bvals+1*bshift, s(3,:,1), '--*', LineWidth = lw, color=[0 0 1], DisplayName = 'Lumen');
+% h5=plot(bvals+1*bshift, s(3,:,1), '--*', LineWidth = lw, color=[0 0 1], DisplayName = 'Lumen', HandleVisibility='off');
 
 xticks(bvals); 
 xticklabels(bvals)
 ylim([-0.02, 0.7])
-ylabel('dMRI signal')
+ylabel('Aggegrate signal')
 yticks(linspace(0.0, 1, 11))
 xlim([800,2200])
 xlabel('b-value (s/mm^{2})')
@@ -48,17 +48,23 @@ xticks(bvals)
 xticklabels(["1000", "1250", "1500", "1750", "2000"])
 grid on
 % legend([h1, h3, h2, h4, h5], 'NumColumns', 3);
-legend([h1, h2, h5], 'NumColumns', 1);
+% legend([h1, h2, h5], 'NumColumns', 1);
+legend([h1, h2], 'NumColumns', 1);
 ax=gca();
 ax.FontSize=14;
 
-f1.Position = [488   180   640   840];
+% f1.Position = [488   180   640   840];
 
 % % For presentation
-% f1.Position = [488   180   850   600];
+f1.Position = [302.6000  121.8000  808.8000  592.8000];
 
-saveas(f1, fullfile(projectfolder, 'Figures', 'ESL_signal_measurements.png'))
+% saveas(f1, fullfile(projectfolder, 'Figures', 'ESL_signal_measurements.png'))
 % exportgraphics(f1, fullfile(projectfolder, 'Figures', 'ESL_signal_measurements.png'), 'Resolution', 300)
+
+
+
+
+ylim([0.2, 0.7])
 
 %% ES contrast
 % 

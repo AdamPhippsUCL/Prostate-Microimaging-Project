@@ -4,8 +4,8 @@ clear;
 projectfolder = pwd;
 
 % Sample
-SampleNum = 1;
-SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
+SampleNum = 6;
+SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9', '20260128_UQ10'};
 SampleName = SampleNames{SampleNum};
 
 % MGE image
@@ -33,9 +33,9 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 %% Define slice and region to present
 
 % SAMPLE NUMBER
-snum = 'UQ4N';
+snum = 'UQ9N';
 
-sl=140;
+sl=120;
 switch snum
     case 'UQ4B'
         xs = 40:220;
@@ -44,8 +44,8 @@ switch snum
         xs = 48:228;
         ys = 200:420;        
     case 'UQ4N'
-        xs = 48:228;
-        ys = 420:640;
+        xs = 40:218;
+        ys = 410:630;
     case 'UQ6B'
         xs = 40:220;
         ys = 40:260;
@@ -80,15 +80,36 @@ end
 
 f1=figure;
 imshow(squeeze(MGE(sl,xs,ys)),[0 prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
-saveas(f1, fullfile(projectfolder, 'Figures', 'Example_Mask_MGE.png'));
+% saveas(f1, fullfile(projectfolder, 'Figures', 'Example_Mask_MGE.png'));
 
 f2=figure;
 imshow(squeeze(dwFA(sl,xs,ys)),[0 5e-4]);
-saveas(f2, fullfile(projectfolder, 'Figures', 'Example_Mask_dwFA.png'));
+% saveas(f2, fullfile(projectfolder, 'Figures', 'Example_Mask_dwFA.png'));
 
 f3=figure;
 imshow(squeeze(MGE(sl,xs,ys)),[0 prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
 hold on
 mask = imshow(squeeze(displaymasks(sl,xs,ys,:)));
 set(mask, 'AlphaData', 0.2)
-saveas(f3, fullfile(projectfolder, 'Figures', 'Example_Mask_ESL.png'));
+% saveas(f3, fullfile(projectfolder, 'Figures', 'Example_Mask_ESL.png'));
+
+
+
+%% Axial slices for figures with MCT
+
+% UQ8 slice 614
+
+sl = 614;
+
+figure
+imshow(squeeze(MGE(:,:,sl)), [0 prctile(squeeze(MGE(:,:,sl)), 95, 'all')])
+set(gca, 'XDir','reverse')
+
+
+% 
+% D = load(fullfile(projectfolder, 'Outputs', 'Model Fitting', SampleName, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'D.mat')).D;
+% 
+% 
+% figure
+% imshow(squeeze(D(:,:,615)), [0 2e-3])
+% set(gca, 'XDir','reverse')

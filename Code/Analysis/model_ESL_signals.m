@@ -136,7 +136,7 @@ for compindx = 1:length(components)
                 beta0 = [0.1, 10, 1, 1, 1];
                 lb = [0, 1, 0, 0, 0.8];
                 ub = [1, 50, 3, 3, 1.2];
-                
+         
         end
 
         
@@ -205,20 +205,23 @@ for compindx = 1:length(components)
         RESULTS(n).AICc = AICc;
 
 
+
+        % Compute predicted signals
+        
+        % Predicted vs measured signals
+        pred = ones(size(signals(indx, :, 1)));
+        for ischeme = 2:nscheme
+            bval = scheme(ischeme).bval;
+            delta = scheme(ischeme).delta;
+            DELTA = scheme(ischeme).DELTA;
+            pred(ischeme) = diffusion_model(params, [bval, delta, DELTA], modelname = modelname);
+        end    
+
+
+        RESULTS(n).pred_signals = pred;
+
+        
         if DisplayPredictions
-
-            % Predicted vs measured signals
-            pred = zeros(size(signals(indx, :, 1)));
-
-            for ischeme = 2:nscheme
-                
-                bval = scheme(ischeme).bval;
-                delta = scheme(ischeme).delta;
-                DELTA = scheme(ischeme).DELTA;
-    
-                pred(ischeme) = diffusion_model(params, [bval, delta, DELTA], modelname = modelname);
-    
-            end
     
             switch modelname
                 case 'ADC' 
@@ -271,55 +274,55 @@ for compindx = 1:length(components)
 
         if DisplayLikelihoodProfiles
 
-        for fixedindx = 1:Nparam
+            for fixedindx = 1:Nparam
+        
+                Nvals = 100;
+                low = (40*lb(fixedindx)+ub(fixedindx))/40;
+                high = (40*ub(fixedindx)+lb(fixedindx))/40;
+                fixedvals = linspace(low,high,Nvals); %linspace(lb(fixedindx), ub(fixedindx),Nvals);
+                valspacing = fixedvals(2)-fixedvals(1);
+                resnorms = zeros(1,Nvals);
+        
+                for findx = 1:Nvals
+        
+                    fixedval = fixedvals(findx);
+        
+                    thisbeta0 = beta0;
+                    thisbeta0(fixedindx) = fixedval;
+        
+                    thislb = lb;
+                    thislb(fixedindx) = fixedval-0.5*valspacing;
+        
+                    thisub = ub;
+                    thisub(fixedindx) = fixedval+0.5*valspacing;
+        
+                    % Modelling predictions
+                    [params, resnorm] = fitting_func( ...
+                        s, ...
+                        scheme, ...
+                        modelname = modelname, ...
+                        fittingtechnique = fittingtechnique,...
+                        Nparam=Nparam,...
+                        beta0=thisbeta0,...
+                        lb=thislb,...
+                        ub=thisub,...
+                        lambda=lambda ...
+                        );
+        
+       
+                    resnorms(findx)=resnorm;
+        
+                end
+        
+                figure
+                scatter(fixedvals, resnorms, '*')
+                % ylim([0, 0.005])
     
-            Nvals = 100;
-            low = (40*lb(fixedindx)+ub(fixedindx))/40;
-            high = (40*ub(fixedindx)+lb(fixedindx))/40;
-            fixedvals = linspace(low,high,Nvals); %linspace(lb(fixedindx), ub(fixedindx),Nvals);
-            valspacing = fixedvals(2)-fixedvals(1);
-            resnorms = zeros(1,Nvals);
-    
-            for findx = 1:Nvals
-    
-                fixedval = fixedvals(findx);
-    
-                thisbeta0 = beta0;
-                thisbeta0(fixedindx) = fixedval;
-    
-                thislb = lb;
-                thislb(fixedindx) = fixedval-0.5*valspacing;
-    
-                thisub = ub;
-                thisub(fixedindx) = fixedval+0.5*valspacing;
-    
-                % Modelling predictions
-                [params, resnorm] = fitting_func( ...
-                    s, ...
-                    scheme, ...
-                    modelname = modelname, ...
-                    fittingtechnique = fittingtechnique,...
-                    Nparam=Nparam,...
-                    beta0=thisbeta0,...
-                    lb=thislb,...
-                    ub=thisub,...
-                    lambda=lambda ...
-                    );
-    
-   
-                resnorms(findx)=resnorm;
+                title(['Component: ' component ', Model: ' modelname ', Parameter ' ParamNames{fixedindx}])
+                xlabel(ParamNames{fixedindx})
+                ylabel('Norm of residuals')
     
             end
-    
-            figure
-            scatter(fixedvals, resnorms, '*')
-            % ylim([0, 0.005])
-
-            title(['Component: ' component ', Model: ' modelname ', Parameter ' ParamNames{fixedindx}])
-            xlabel(ParamNames{fixedindx})
-            ylabel('Norm of residuals')
-
-        end
 
         end
 

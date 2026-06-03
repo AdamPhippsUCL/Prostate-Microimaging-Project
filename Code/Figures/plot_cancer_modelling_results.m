@@ -5,10 +5,11 @@ projectfolder = pwd;
 
 %% Load modelling results
 
-samplenames = {...'20250224_UQ4'
+samplenames = {...'20250224_UQ4',
             ...'20250414_UQ6'
              ...'20260128_UQ10'
-             '20260315_UQ11'
+           '20260315_UQ11'
+
              };
 
 group = 'Specific_Samples'; %Cancer_G33';
@@ -19,8 +20,8 @@ Cancer_G33 = {'4B', '4M', '11N', '11N'};
 Cancer_G44 = {'6N'};
 Cancer_G34 = {'10B', '10B', '10M'};
 
-Specific_Samples = {'11B'};
-
+Specific_Samples = {'11B', '11N'};
+% Specific_Samples = {'6N', '10B', '10M'};
 
 % Ball+Sphere
 Pred_fs = [];
@@ -50,7 +51,7 @@ for sindx = 1:length(samplenames)
     thisCOMP = thisCOMP(Bools, :);
     
     % Remove voxels with low epithelium (stroma and lumen not of interest here)
-    bool = (thisCOMP(:,1)>0.3);
+    bool = and(thisCOMP(:,1)>0.3, thisCOMP(:,2)<0.4);
     thisCOMP = thisCOMP(bool, :);
     
     COMP = [COMP; thisCOMP];
@@ -143,18 +144,32 @@ BenignRL = load(fullfile(RLfolder, 'fs_BenignRL.mat')).fs_RL;
 fs_bias = BenignRL(1);
 fs_lowerRL = BenignRL(2);
 fs_upperRL = BenignRL(3);
+fs_sigma = load(fullfile(RLfolder, 'fs_sigma.mat')).fs_sigma;
 
 f=figure;
-scatter(Pred_fs, fs_diff ,   14, 'filled', 'MarkerFaceAlpha', 0.9, CData=COMP, HandleVisibility='off')
+scatter(Pred_fs, fs_diff ,   10, 'filled', 'MarkerFaceAlpha', 0.6, CData=COMP, HandleVisibility='off')
 hold on
-% yline(fs_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
-yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
-yline(fs_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1, .1, .1], LineWidth=1.2)
-yline(fs_upperRL, '--', HandleVisibility="off",  color = [0.1, .1, .1], LineWidth=1.2)
+
+% % yline(fs_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
+% yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
+% yline(fs_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1, .1, .1], LineWidth=1.2)
+% yline(fs_upperRL, '--', HandleVisibility="off",  color = [0.1, .1, .1], LineWidth=1.2)
+
+% yline(fs_bias, '-', DisplayName= '\mu', LineWidth=1.2)
+
+% Add more sigma lines..
+yline(fs_bias-1*fs_sigma, '-.', DisplayName='\mu \pm \sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+yline(fs_bias+1*fs_sigma, '-.', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+% Add more sigma lines..
+yline(fs_bias-2*fs_sigma, '--', DisplayName='\mu \pm 2\sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+yline(fs_bias+2*fs_sigma, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+
 legend(Location="northwest")
 grid on
-ylim([-0.26, 0.4])
-yticks(-0.3:0.1:0.4)
+ylim([-0.32, 0.5])
+yticks(-0.3:0.1:0.5)
 xlim([-0.05, 0.35])
 xticks([0:0.1:0.3])
 xlabel('Predicted Sphere Fraction')
@@ -176,7 +191,10 @@ ys = linspace(ymin, ymax, 400);
 
 [X, Y] = meshgrid(xs, ys);
 
-alphaVals = 0.1*(and(Y<fs_upperRL, Y>fs_lowerRL));
+% alphaVals = 0.1*(and(Y<fs_upperRL, Y>fs_lowerRL));
+
+alpha_step=0.08;
+alphaVals = alpha_step*(and(Y<fs_bias+fs_sigma, Y>fs_bias-fs_sigma)) + alpha_step*(and(Y<fs_bias+2*fs_sigma, Y>fs_bias-2*fs_sigma));
 
 % Create base color (e.g. blue)
 C = ones(size(Y,1), size(Y,2), 3);  % RGB array
@@ -195,7 +213,7 @@ s=surf(X, Y, zeros(size(Y)), C, ...
 uistack(s, "bottom")
 
 
-f.Position = [680   280   600   380];
+f.Position = [680   400   600   380];
 
 % saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals fs.png']))
 
@@ -210,18 +228,31 @@ BenignRL = load(fullfile(RLfolder, 'Db_BenignRL.mat')).Db_RL;
 Db_bias = BenignRL(1);
 Db_lowerRL = BenignRL(2);
 Db_upperRL = BenignRL(3);
+Db_sigma = load(fullfile(RLfolder, 'Db_sigma.mat')).Db_sigma;
+
 
 f=figure;
-scatter(Pred_Db, Db_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
+scatter(Pred_Db, Db_diff ,   10, 'filled', 'MarkerFaceAlpha', 0.6, CData=COMP, HandleVisibility='off')
 hold on
-% yline(Db_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
-yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
-yline(Db_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
-yline(Db_upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+% % yline(Db_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
+% yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
+% yline(Db_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+% yline(Db_upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+% Add more sigma lines..
+yline(Db_bias-1*Db_sigma, '-.', DisplayName='\mu \pm \sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+yline(Db_bias+1*Db_sigma, '-.', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+% Add more sigma lines..
+yline(Db_bias-2*Db_sigma, '--', DisplayName='\mu \pm 2\sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+yline(Db_bias+2*Db_sigma, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+
 legend(Location="northeast")
 grid on
-ylim([-0.72, 0.72])
-yticks(-0.6:0.2:0.6)
+ylim([-0.72, 0.92])
+yticks(-1:0.2:1)
 xlim([0.56, 2.04])
 xticks([0.6:0.2:2])
 xlabel('Predicted D_{ball} (µm^2/ms)')
@@ -244,7 +275,11 @@ ys = linspace(ymin, ymax, 400);
 
 [X, Y] = meshgrid(xs, ys);
 
-alphaVals = 0.1*(and(Y<Db_upperRL, Y>Db_lowerRL));
+% alphaVals = 0.1*(and(Y<Db_upperRL, Y>Db_lowerRL));
+
+alpha_step=0.08;
+alphaVals = alpha_step*(and(Y<Db_bias+Db_sigma, Y>Db_bias-Db_sigma)) + alpha_step*(and(Y<Db_bias+2*Db_sigma, Y>Db_bias-2*Db_sigma));
+
 
 % Create base color (e.g. blue)
 C = ones(size(Y,1), size(Y,2), 3);  % RGB array
@@ -262,82 +297,11 @@ s=surf(X, Y, zeros(size(Y)), C, ...
   );
 uistack(s, "bottom")
 
-
-f.Position = [680   458   600   380];
+f.Position = [680   400   600   380];
 
 % saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals Db.png']))
 
 
-%% SPHERE RADIUS
-
-R_diff = (Measured_R-Pred_R);
-
-% Load Benign RL
-RLfolder =  fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'Ball+Sphere');
-BenignRL = load(fullfile(RLfolder, 'R_BenignRL.mat')).R_RL;
-R_bias = BenignRL(1);
-R_lowerRL = BenignRL(2);
-R_upperRL = BenignRL(3);
-
-f=figure;
-scatter(Pred_R, R_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
-hold on
-
-% yline(R_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
-yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
-
-yline(R_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
-yline(R_upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
-legend(Location="northeast")
-grid on
-
-ylim([-4.4, 4.6])
-yticks(-6:2:6)
-xlim([4, 7])
-xticks([1:1:8])
-
-xlabel('Predicted R (µm)')
-ylabel('Measured - Predicted R (µm)')
-
-ax = gca();
-ax.FontSize = 12;
-
-
-% Create shaded region
-xlims = xlim;
-xmin = xlims(1);
-xmax = xlims(2);
-xs = linspace(xmin, xmax, 400);
-
-ylims = ylim;
-ymin = ylims(1);
-ymax = ylims(2);
-ys = linspace(ymin, ymax, 400);
-
-[X, Y] = meshgrid(xs, ys);
-
-alphaVals = 0.1*(and(Y<R_upperRL, Y>R_lowerRL));
-
-% Create base color (e.g. blue)
-C = ones(size(Y,1), size(Y,2), 3);  % RGB array
-C(:,:,1) = 0.1;   % red channel
-C(:,:,2) = 0.1;  % green
-C(:,:,3) = 0.1;  % blue (MATLAB default)
-
-s=surf(X, Y, zeros(size(Y)), C, ...
-    'FaceColor', 'texturemap', ...
-    'EdgeColor', 'none', ...
-    'FaceAlpha', 'texturemap', ...
-    'AlphaData', alphaVals, ...
-    'AlphaDataMapping', 'none', ...
-    HandleVisibility='off' ...
-  );
-uistack(s, "bottom")
-
-
-f.Position = [680   458   600   380];
-
-% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals R.png']))
 
 %% ADC
 
@@ -349,16 +313,29 @@ BenignRL = load(fullfile(RLfolder, 'ADC_BenignRL.mat')).ADC_RL;
 ADC_bias = BenignRL(1);
 ADC_lowerRL = BenignRL(2);
 ADC_upperRL = BenignRL(3);
+ADC_sigma = load(fullfile(RLfolder, 'ADC_sigma.mat')).ADC_sigma;
+
 
 f=figure;
-scatter(Pred_ADC, ADC_diff ,   14, 'filled', 'MarkerFaceAlpha', 1, CData=COMP, HandleVisibility='off')
+scatter(Pred_ADC, ADC_diff ,   10, 'filled', 'MarkerFaceAlpha', 0.6, CData=COMP, HandleVisibility='off')
 hold on
-% yline(ADC_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
-yline(ADC_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
-yline(ADC_upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+% % yline(ADC_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
+% yline(ADC_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+% yline(ADC_upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+% Add more sigma lines..
+yline(ADC_bias-1*ADC_sigma, '-.', DisplayName='\mu \pm \sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+yline(ADC_bias+1*ADC_sigma, '-.', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+% Add more sigma lines..
+yline(ADC_bias-2*ADC_sigma, '--', DisplayName='\mu \pm 2\sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+yline(ADC_bias+2*ADC_sigma, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+
 legend(Location="northwest")
 grid on
-ylim([-0.58, 0.72])
+ylim([-0.64, 1.1])
 yticks(-0.8:0.2:0.8)
 xlim([0.36, 1.04])
 xticks([0.4:0.2:2])
@@ -381,7 +358,12 @@ ys = linspace(ymin, ymax, 400);
 
 [X, Y] = meshgrid(xs, ys);
 
-alphaVals = 0.1*(and(Y<ADC_upperRL, Y>ADC_lowerRL));%0.5*exp(-(Y-fs_bias).^2/(2*((fs_upperRL-fs_lowerRL)/3.92)^2));
+% alphaVals = 0.1*(and(Y<ADC_upperRL, Y>ADC_lowerRL));%0.5*exp(-(Y-fs_bias).^2/(2*((fs_upperRL-fs_lowerRL)/3.92)^2));
+
+alpha_step=0.08;
+alphaVals = alpha_step*(and(Y<ADC_bias+ADC_sigma, Y>ADC_bias-ADC_sigma)) ...
+ + alpha_step*(and(Y<ADC_bias+2*ADC_sigma, Y>ADC_bias-2*ADC_sigma));
+
 
 % Create base color (e.g. blue)
 C = ones(size(Y,1), size(Y,2), 3);  % RGB array
@@ -400,6 +382,95 @@ s=surf(X, Y, zeros(size(Y)), C, ...
 uistack(s, "bottom")
 
 
-f.Position = [480   358   600   380];
+f.Position = [680   400   600   380];
 
 % saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals ADC.png']))
+
+
+
+%% SPHERE RADIUS
+
+% R_diff = (Measured_R-Pred_R);
+% 
+% % Load Benign RL
+% RLfolder =  fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'Ball+Sphere');
+% BenignRL = load(fullfile(RLfolder, 'R_BenignRL.mat')).R_RL;
+% R_bias = BenignRL(1);
+% R_lowerRL = BenignRL(2);
+% R_upperRL = BenignRL(3);
+% R_sigma = load(fullfile(RLfolder, 'R_sigma.mat')).R_sigma;
+% 
+% 
+% f=figure;
+% scatter(Pred_R, R_diff ,   10, 'filled', 'MarkerFaceAlpha', 0.6, CData=COMP, HandleVisibility='off')
+% hold on
+% 
+% % % yline(R_bias, '-', DisplayName='Bias (Benign)', LineWidth=1.2)
+% % yline(0, '-', HandleVisibility = 'off', LineWidth=1.1, Alpha=0.4)
+% % yline(R_lowerRL, '--', DisplayName='95% Limits (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+% % yline(R_upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+% 
+% % Add more sigma lines..
+% yline(R_bias-1*R_sigma, '-.', DisplayName='\mu \pm \sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+% yline(R_bias+1*R_sigma, '-.', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+% 
+% % Add more sigma lines..
+% yline(R_bias-2*R_sigma, '--', DisplayName='\mu \pm 2\sigma (from benign tissue)',  color = [.1 .1 .1], LineWidth=1.2)
+% yline(R_bias+2*R_sigma, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+% 
+% 
+% legend(Location="northeast")
+% grid on
+% 
+% ylim([-4.6, 6])
+% yticks(-6:2:6)
+% xlim([3.8, 6.4])
+% xticks([1:1:8])
+% 
+% xlabel('Predicted R (µm)')
+% ylabel('Measured - Predicted R (µm)')
+% 
+% ax = gca();
+% ax.FontSize = 12;
+% 
+% 
+% % Create shaded region
+% xlims = xlim;
+% xmin = xlims(1);
+% xmax = xlims(2);
+% xs = linspace(xmin, xmax, 400);
+% 
+% ylims = ylim;
+% ymin = ylims(1);
+% ymax = ylims(2);
+% ys = linspace(ymin, ymax, 400);
+% 
+% [X, Y] = meshgrid(xs, ys);
+% 
+% % alphaVals = 0.1*(and(Y<R_upperRL, Y>R_lowerRL));
+% 
+% alpha_step=0.08;
+% alphaVals = alpha_step*(and(Y<R_bias+R_sigma, Y>R_bias-R_sigma)) ...
+%  + alpha_step*(and(Y<R_bias+2*R_sigma, Y>R_bias-2*R_sigma));
+% 
+% 
+% % Create base color (e.g. blue)
+% C = ones(size(Y,1), size(Y,2), 3);  % RGB array
+% C(:,:,1) = 0.1;   % red channel
+% C(:,:,2) = 0.1;  % green
+% C(:,:,3) = 0.1;  % blue (MATLAB default)
+% 
+% s=surf(X, Y, zeros(size(Y)), C, ...
+%     'FaceColor', 'texturemap', ...
+%     'EdgeColor', 'none', ...
+%     'FaceAlpha', 'texturemap', ...
+%     'AlphaData', alphaVals, ...
+%     'AlphaDataMapping', 'none', ...
+%     HandleVisibility='off' ...
+%   );
+% uistack(s, "bottom")
+% 
+% 
+% f.Position = [680   458   600   380];
+% 
+% % saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals R.png']))

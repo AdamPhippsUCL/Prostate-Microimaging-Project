@@ -6,7 +6,17 @@ projectfolder = pwd;
 %%
 
 % Sample name
-samplename = '20260128_UQ10';
+samplename = '20250414_UQ6';
+
+% '20250224_UQ4' 
+% '20250407_UQ5'
+% '20250414_UQ6'
+% '20250522_UQ7'
+% '20250523_UQ8'
+% '20250524_UQ9'
+% '20260128_UQ10'
+% '20260315_UQ11'
+
 
 % Imaging data
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data', 'MAT DN'); 
@@ -51,7 +61,7 @@ switch samplename
 
         % === Define masks for individual samples
 
-        Bmask = samplemask.*and(Zs>=1, Zs<208);
+        Bmask = samplemask.*and(Zs>=16, Zs<208);
         Mmask = samplemask.*and(Zs>=208, Zs<398);
         Nmask = samplemask.*and(Zs>=398, Zs<640);
 
@@ -87,7 +97,7 @@ switch samplename
 
         Bmask = samplemask.*and(Zs>=15, Zs<285);
         Mmask = samplemask.*and(Zs>=285, Zs<552);
-        Nmask = samplemask.*and(Zs>=552, Zs<641);
+        Nmask = samplemask.*and(Zs>=582, Zs<633);
 
 
     case '20250522_UQ7'

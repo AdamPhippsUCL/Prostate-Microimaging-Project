@@ -6,10 +6,13 @@ projectfolder = pwd;
 %% Image details
 
 % Sample(s) names
-samplename = ...'Multi-sample';
-                '20260128_UQ10';
+samplename = 'Multi-sample';
+                ...'20250224_UQ4';
+           ...'20250414_UQ6';
+            ...'20260128_UQ10';
             ...'20260315_UQ11';
 
+                
 % Images
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
@@ -24,6 +27,7 @@ SeriesDescriptions = {
     'STEAM_LongDELTA_100 (DS)',...
     'STEAM_LongDELTA_120 (DS)'...
 };
+
 scheme = load(fullfile(projectfolder, "Schemes", "20250224_UQ4 AllDELTA.mat")).scheme;
 nscheme = length(scheme);
 
@@ -128,11 +132,17 @@ save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
 modelname = 'Ball+Sphere';
 fittingtechnique = 'LSQ';
 
-Nparam = 5;
-beta0 = [0.24, 6.4, 0.6, 0.8, 1];
-lb = [0, 2, 0.4, 0.2, 1];
-ub = [1, 12, 0.8, 3, 1];
+% Nparam = 5;
+% beta0 = [0.24, 6.4, 0.6, 0.8, 1];
+% lb = [0, 2, 0.4, 0.2, 1];
+% ub = [1, 12, 0.8, 3, 1];
 
+
+% TESTING FIXED RADIUS
+Nparam = 5;
+beta0 = [0.24, 6, 0.6, 0.8, 1];
+lb = [0, 6, 0.4, 0.2, 1];
+ub = [1, 6, 0.8, 3, 1];
 
 % Regularisation (Don't regluarlise parameters which would change
 % significantly in purely fluid voxel i.e. Db and fs)

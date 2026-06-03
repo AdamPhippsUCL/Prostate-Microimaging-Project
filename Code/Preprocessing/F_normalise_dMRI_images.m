@@ -6,8 +6,16 @@ projectfolder = pwd;
 
 %% Imaging data
 
+samplename = '20260315_UQ11' ;
 
-samplename = '20260315_UQ11';
+% '20250224_UQ4' 
+% '20250407_UQ5'
+% '20250414_UQ6'
+% '20250522_UQ7'
+% '20250523_UQ8'
+% '20250524_UQ9'
+% '20260128_UQ10'
+% '20260315_UQ11'
 
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data', 'MAT DN');  
 
