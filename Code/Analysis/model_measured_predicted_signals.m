@@ -6,11 +6,11 @@ projectfolder = pwd;
 %% Image details
 
 % Sample(s) names
-samplename = 'Multi-sample';
+samplename = ...'Multi-sample';
                 ...'20250224_UQ4';
            ...'20250414_UQ6';
-            ...'20260128_UQ10';
-            ...'20260315_UQ11';
+           .... '20260128_UQ10';
+            '20260315_UQ11';
 
                 
 % Images
@@ -137,16 +137,15 @@ fittingtechnique = 'LSQ';
 % lb = [0, 2, 0.4, 0.2, 1];
 % ub = [1, 12, 0.8, 3, 1];
 
-
-% TESTING FIXED RADIUS
+% FIXED RADIUS AND FIXED DS (R=6um, Ds=0.6)
 Nparam = 5;
 beta0 = [0.24, 6, 0.6, 0.8, 1];
-lb = [0, 6, 0.4, 0.2, 1];
-ub = [1, 6, 0.8, 3, 1];
+lb = [0, 6, 0.6, 0.1, 1];
+ub = [1, 6, 0.6, 3, 1];
 
 % Regularisation (Don't regluarlise parameters which would change
 % significantly in purely fluid voxel i.e. Db and fs)
-lambda0 = 2e-2;
+lambda0 = 0e-2;
 lambda = lambda0*[0,1,1,0,1];
 
 

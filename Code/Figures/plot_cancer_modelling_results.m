@@ -20,8 +20,8 @@ Cancer_G33 = {'4B', '4M', '11N', '11N'};
 Cancer_G44 = {'6N'};
 Cancer_G34 = {'10B', '10B', '10M'};
 
-Specific_Samples = {'11B', '11N'};
-% Specific_Samples = {'6N', '10B', '10M'};
+Specific_Samples = {'11N'};
+% Specific_Samples = {'11B', '11N'};
 
 % Ball+Sphere
 Pred_fs = [];
@@ -146,6 +146,7 @@ fs_lowerRL = BenignRL(2);
 fs_upperRL = BenignRL(3);
 fs_sigma = load(fullfile(RLfolder, 'fs_sigma.mat')).fs_sigma;
 
+
 f=figure;
 scatter(Pred_fs, fs_diff ,   10, 'filled', 'MarkerFaceAlpha', 0.6, CData=COMP, HandleVisibility='off')
 hold on
@@ -168,7 +169,7 @@ yline(fs_bias+2*fs_sigma, '--', HandleVisibility="off",  color = [.1 .1 .1], Lin
 
 legend(Location="northwest")
 grid on
-ylim([-0.32, 0.5])
+ylim([-0.32, 0.32])
 yticks(-0.3:0.1:0.5)
 xlim([-0.05, 0.35])
 xticks([0:0.1:0.3])
@@ -215,7 +216,9 @@ uistack(s, "bottom")
 
 f.Position = [680   400   600   380];
 
-% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals fs.png']))
+title(cell2mat(Specific_Samples));
+
+saveas(f, fullfile(projectfolder, 'Thesis Figures', [cell2mat(Specific_Samples) ' Residuals fs.png']))
 
 
 %% BALL-COMPARTMENT DIFFUSIVITY
@@ -251,7 +254,7 @@ yline(Db_bias+2*Db_sigma, '--', HandleVisibility="off",  color = [.1 .1 .1], Lin
 
 legend(Location="northeast")
 grid on
-ylim([-0.72, 0.92])
+ylim([-0.82, 0.92])
 yticks(-1:0.2:1)
 xlim([0.56, 2.04])
 xticks([0.6:0.2:2])
@@ -299,7 +302,9 @@ uistack(s, "bottom")
 
 f.Position = [680   400   600   380];
 
-% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals Db.png']))
+title(cell2mat(Specific_Samples));
+
+saveas(f, fullfile(projectfolder, 'Thesis Figures', [cell2mat(Specific_Samples) ' Residuals Db.png']))
 
 
 
@@ -335,8 +340,8 @@ yline(ADC_bias+2*ADC_sigma, '--', HandleVisibility="off",  color = [.1 .1 .1], L
 
 legend(Location="northwest")
 grid on
-ylim([-0.64, 1.1])
-yticks(-0.8:0.2:0.8)
+ylim([-0.84, 1.12])
+yticks(-1:0.2:1)
 xlim([0.36, 1.04])
 xticks([0.4:0.2:2])
 xlabel('Predicted ADC (µm^2/ms)')
@@ -384,7 +389,10 @@ uistack(s, "bottom")
 
 f.Position = [680   400   600   380];
 
-% saveas(f, fullfile(projectfolder, 'Figures', [group ' Residuals ADC.png']))
+title(cell2mat(Specific_Samples));
+
+saveas(f, fullfile(projectfolder, 'Thesis Figures', [cell2mat(Specific_Samples) ' Residuals ADC.png']))
+
 
 
 

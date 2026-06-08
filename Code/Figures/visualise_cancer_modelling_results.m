@@ -12,7 +12,7 @@ samplename = '20260128_UQ10';
 % '20260128_UQ10'
 % '20260315_UQ11'
 
-sample_num = '10M';
+sample_num = '10B';
 
 folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 COMP = load(fullfile(folder, "COMP.mat")).COMP;
@@ -73,6 +73,7 @@ pred_ADC = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'D')
 pred_ADC = pred_ADC(Bools);
 
 
+
 %% Load MGE image and sample mask
 
 % MGE
@@ -103,7 +104,7 @@ Diffs_high = imresize3(ADC_Diffs, size(MGE), Method="nearest");
 
 
 % Central slice of MGE
-sl = 120;
+sl = 100;
 
 figure
 ax1=axes;
