@@ -6,7 +6,7 @@ projectfolder = pwd;
 %%
 
 % Sample name
-samplename = '20250414_UQ6';
+samplename = '20260702_UQ13';
 
 % '20250224_UQ4' 
 % '20250407_UQ5'
@@ -16,7 +16,7 @@ samplename = '20250414_UQ6';
 % '20250524_UQ9'
 % '20260128_UQ10'
 % '20260315_UQ11'
-
+% '20260630_UQ12'
 
 % Imaging data
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data', 'MAT DN'); 
@@ -139,6 +139,7 @@ switch samplename
         Mmask = samplemask.*and(Zs>=198, Zs<458);
         Nmask = samplemask.*and(Zs>=458, Zs<641);   
 
+
     case '20250524_UQ9'
 
         % Cylinder centred at (118, 127), radius 80 (1.6mm)
@@ -163,7 +164,7 @@ switch samplename
 
         % == Define masks for individual samples
 
-        Bmask = samplemask.*and(Zs>=6, Zs<164);
+        Bmask = samplemask.*and(Zs>=18, Zs<164);
         Mmask = samplemask.*and(Zs>=174, Zs<464);
         Nmask = samplemask.*and(Zs>=464, Zs<624);
 
@@ -173,7 +174,7 @@ switch samplename
 
     case '20260315_UQ11'
 
-        % Cylinder centred at (129, 115.5), radius 72 (1.44mm)
+        % Cylinder centred at (130, 115.5), radius 72 (1.44mm)
         samplemask = (Xs-130).^2 + (Ys-115.5).^2 <72^2;
 
         % == Define masks for individual samples
@@ -183,6 +184,28 @@ switch samplename
         Nmask = samplemask.*and(Zs>=310, Zs<520);
 
 
+    case '20260630_UQ12'
+
+        % Cylinder centred at (128, 114), radius 68 
+        samplemask = (Xs-128).^2 + (Ys-114).^2 <68^2;
+
+        % == Define masks for individual samples
+
+        Bmask = samplemask.*and(Zs>=15, Zs<226);
+        Mmask = samplemask.*and(Zs>=226, Zs<450);
+        Nmask = samplemask.*and(Zs>=450, Zs<630);
+
+
+    case '20260702_UQ13'
+
+        % Cylinder centred at (136, 111), radius 68 
+        samplemask = (Xs-136).^2 + (Ys-111).^2 <68^2;
+
+        % == Define masks for individual samples
+
+        Bmask = samplemask.*and(Zs>=15, Zs<248);
+        Mmask = samplemask.*and(Zs>=260, Zs<510);
+        Nmask = samplemask.*and(Zs>=510, Zs<630);
 end
 
 

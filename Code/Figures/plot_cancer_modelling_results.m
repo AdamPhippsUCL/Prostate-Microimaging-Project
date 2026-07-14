@@ -8,8 +8,8 @@ projectfolder = pwd;
 samplenames = {...'20250224_UQ4',
             ...'20250414_UQ6'
              ...'20260128_UQ10'
-           '20260315_UQ11'
-
+           ...'20260315_UQ11'
+           '20260630_UQ12'
              };
 
 group = 'Specific_Samples'; %Cancer_G33';
@@ -20,7 +20,7 @@ Cancer_G33 = {'4B', '4M', '11N', '11N'};
 Cancer_G44 = {'6N'};
 Cancer_G34 = {'10B', '10B', '10M'};
 
-Specific_Samples = {'11N'};
+Specific_Samples = {'12N'};
 % Specific_Samples = {'11B', '11N'};
 
 % Ball+Sphere

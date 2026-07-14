@@ -16,7 +16,7 @@ switch UseDenoisedData
 end
 
 % Sample name
-SampleName = '20260315_UQ11';
+SampleName = '20260702_UQ13';
 
 % Series description
 SeriesDescription = '40u_DtiSE_2012_SPOIL10% (20 micron)';

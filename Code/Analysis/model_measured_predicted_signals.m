@@ -9,9 +9,13 @@ projectfolder = pwd;
 samplename = ...'Multi-sample';
                 ...'20250224_UQ4';
            ...'20250414_UQ6';
-           .... '20260128_UQ10';
-            '20260315_UQ11';
-
+            '20250522_UQ7';
+           ...'20250523_UQ8';
+           ... '20250524_UQ9';
+           ...'20260128_UQ10';
+           ...'20260315_UQ11';
+           ...'20260630_UQ12';
+           ...'20260702_UQ13';
                 
 % Images
 SeriesDescriptions = {
@@ -144,7 +148,8 @@ lb = [0, 6, 0.6, 0.1, 1];
 ub = [1, 6, 0.6, 3, 1];
 
 % Regularisation (Don't regluarlise parameters which would change
-% significantly in purely fluid voxel i.e. Db and fs)
+% significantly in purely fluid voxel i.e. Db and fs) Everything else is
+% fixed anyway...
 lambda0 = 0e-2;
 lambda = lambda0*[0,1,1,0,1];
 

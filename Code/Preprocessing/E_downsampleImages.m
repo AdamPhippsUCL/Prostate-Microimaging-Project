@@ -9,7 +9,7 @@ projectfolder = pwd;
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 
 % Sample name
-SampleName = '20260315_UQ11'; 
+SampleName = '20260702_UQ13'; 
 
 % '20250224_UQ4' 
 % '20250407_UQ5'
@@ -19,6 +19,7 @@ SampleName = '20260315_UQ11';
 % '20250524_UQ9'
 % '20260128_UQ10'
 % '20260315_UQ11'
+% '20260630_UQ12'
 
 % Series description
 SeriesDescriptions = {...

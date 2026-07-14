@@ -9,10 +9,10 @@ projectfolder = pwd;
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 
 % Sample name
-SampleName = '20260315_UQ11';
+SampleName = '20260702_UQ13';
 
 % Series description
-SeriesDescription =  '3D_T2_MSME_match_DTI';
+SeriesDescription =  'STEAM_DELTA_50';
 
 
 %% Load image array and DICOM 

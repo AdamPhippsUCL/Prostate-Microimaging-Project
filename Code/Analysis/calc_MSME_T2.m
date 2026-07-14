@@ -5,15 +5,15 @@ projectfolder = pwd;
 
 %% Imaging data
 
-SampleName = '20260128_UQ10';
+SampleName = '20260702_UQ13';
 
-SeriesDescription = 'T2_MSME';
+SeriesDescription = '3D_T2_MSME_match_DTI (20 micron)';
 
 % Imaging data folder 
 ImagingDataFolder = fullfile(projectfolder, 'Imaging Data');
 
-ImageArray = load(fullfile(ImagingDataFolder, 'MAT', SampleName, SeriesDescription, 'axialImageArray.mat')).ImageArray;
-dinfo = load(fullfile(ImagingDataFolder, 'MAT', SampleName, SeriesDescription, 'axialdinfo.mat')).dinfo;
+ImageArray = load(fullfile(ImagingDataFolder, 'MAT DN', SampleName, SeriesDescription, 'axialImageArray.mat')).ImageArray;
+dinfo = load(fullfile(ImagingDataFolder, 'MAT DN', SampleName, SeriesDescription, 'axialdinfo.mat')).dinfo;
 
 
 % %% Reformat

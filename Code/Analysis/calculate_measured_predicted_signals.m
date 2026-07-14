@@ -10,13 +10,15 @@ projectfolder = pwd;
 % SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
 % multisample = true;
 
-SampleNames = {'20260315_UQ11'};
+SampleNames = {'20250522_UQ7'};
 multisample = false;
 
 %'20250224_UQ4'
 %'20250414_UQ6'
 % '20260128_UQ10'
 % '20260315_UQ11'
+% '20260630_UQ12'
+% '20260702_UQ13'
 
 % Image
 SeriesDescriptions = {

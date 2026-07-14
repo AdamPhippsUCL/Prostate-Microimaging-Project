@@ -6,7 +6,17 @@ projectfolder = pwd;
 %% Sample and Image details
 
 % Sample name
-SampleName = '20260128_UQ10'; % '20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'
+SampleName = '20260702_UQ13'; 
+
+% '20250224_UQ4',
+% '20250407_UQ5',
+% '20250414_UQ6',
+% '20250522_UQ7',
+% '20250523_UQ8',
+% '20250524_UQ9',
+% '20260128_UQ10'
+% '20260315_UQ11'
+% '20260630_UQ12'
 
 % Use denoised data
 UseDenoisedData = true;
@@ -23,10 +33,10 @@ end
 MGE_SeriesDescription = '3DMGE_20u';
 MGE = load(fullfile(ImagingDataFolder, SampleName, MGE_SeriesDescription, 'avgImageArray.mat')).avgImageArray;
 
-% dwFA
+% dwFA and FA
 DTI_SeriesDescription = '40u_DtiSE_2012_SPOIL10% (20 micron)';
 dwFA = load(fullfile(projectfolder, 'Outputs', 'Model Fitting', SampleName, 'DTI', DTI_SeriesDescription, 'dwFA.mat')).dwFA;
-
+FA = load(fullfile(projectfolder, 'Outputs', 'Model Fitting', SampleName, 'DTI', DTI_SeriesDescription, 'FA.mat')).FA;
 
 % T2 Map (UQ10 onwards)
 MSME_SeriesDescription = '3D_T2_MSME_match_DTI (20 micron)';
@@ -36,10 +46,10 @@ catch
     disp('')
 end
 
-
 % Alter thresholds (reviewer response)
 thres_alter = 'none';
 frac = 0.1;
+
 
 %%  Displace images
 
@@ -57,7 +67,18 @@ switch SampleName
         dy=-1;
         newT2 = zeros(size(T2));
         newT2(:,1:240+dx,1:640+dy)=T2(:,1-dx:240,1-dy:640);
-        T2=newT2;        
+        T2=newT2;  
+
+
+    case '20260630_UQ12'
+        dx = 0;
+        dy=-1;
+        newT2 = zeros(size(T2));
+        newT2(:,1:240+dx,1:640+dy)=T2(:,1-dx:240,1-dy:640);
+        T2=newT2;  
+        
+
+
 end
 
 
@@ -236,7 +257,34 @@ switch SampleName
         EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
 
 
+    case '20260630_UQ12'
 
+        MGElow = 2e-8;
+        MGEhigh = 9.6e-8;
+        dwFAlow = 14e-5;
+
+        T2low = 48;
+
+
+        LUMEN = or( (T2>T2low), (MGE>MGEhigh)) ;
+        STROMA = ~logical(LUMEN).*(dwFA>dwFAlow).*and(T2<T2low, MGE>MGElow);
+
+        EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
+
+
+    case '20260702_UQ13'
+
+        MGElow = 2e-8;
+        MGEhigh = 7.6e-8;
+        dwFAlow = 14e-5;
+
+        T2low = 48;
+
+
+        LUMEN = or( (T2>T2low), (MGE>MGEhigh)) ;
+        STROMA = ~logical(LUMEN).*(dwFA>dwFAlow).*and(T2<T2low, MGE>MGElow);
+
+        EPITHELIUM = and(~logical(STROMA), ~logical(LUMEN)).*(MGE>MGElow);
 
 end
 
@@ -251,22 +299,24 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 sl=120;
 cols = 1:640;%20:620;
 rows = 30:210;%35:210;
-f=figure;
-% f.Position = [680   358   420   600];
-ax = axes;
-imshow(squeeze(MGE(sl,rows,cols)),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
-ax.Position = [0.02 0.02 0.96 0.94];
-title('Gradient echo image')
 
-figure;
-ax = axes;
-imshow(squeeze(dwFA(sl,rows,cols)),[0 prctile(squeeze(dwFA(sl,rows,cols)), 99.9, 'all')]);
-ax.Position = [0.02 0.02 0.96 0.94];
 
-figure;
-ax = axes;
-imshow(squeeze(T2(sl,rows,cols)),[0 60]);
-ax.Position = [0.02 0.02 0.96 0.94];
+% f=figure;
+% % f.Position = [680   358   420   600];
+% ax = axes;
+% imshow(squeeze(MGE(sl,rows,cols)),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
+% ax.Position = [0.02 0.02 0.96 0.94];
+% title('Gradient echo image')
+% 
+% figure;
+% ax = axes;
+% imshow(squeeze(dwFA(sl,rows,cols)),[0 prctile(squeeze(dwFA(sl,rows,cols)), 99.9, 'all')]);
+% ax.Position = [0.02 0.02 0.96 0.94];
+% 
+% figure;
+% ax = axes;
+% imshow(squeeze(T2(sl,rows,cols)),[0 60]);
+% ax.Position = [0.02 0.02 0.96 0.94];
 
 f=figure;
 % f.Position = [680   358   420   600];

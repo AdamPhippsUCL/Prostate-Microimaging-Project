@@ -6,7 +6,7 @@ projectfolder = pwd;
 
 %% Imaging data
 
-samplename = '20260315_UQ11' ;
+samplename = '20260702_UQ13' ;
 
 % '20250224_UQ4' 
 % '20250407_UQ5'

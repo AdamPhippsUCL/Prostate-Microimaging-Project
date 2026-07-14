@@ -7,7 +7,7 @@ projectfolder = pwd;
 %% Image details
 
 % Sample name
-SampleName = '20260315_UQ11';
+SampleName = '20260702_UQ13';
 
 % Series description
 SeriesDescription =  '3DMGE_20u';
