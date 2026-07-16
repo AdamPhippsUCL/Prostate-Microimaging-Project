@@ -6,7 +6,7 @@ projectfolder = pwd;
 %% Sample and Image details
 
 % Sample name
-SampleName = '20260702_UQ13'; 
+SampleName = '20250407_UQ5'; 
 
 % '20250224_UQ4',
 % '20250407_UQ5',
@@ -301,17 +301,17 @@ cols = 1:640;%20:620;
 rows = 30:210;%35:210;
 
 
-% f=figure;
-% % f.Position = [680   358   420   600];
-% ax = axes;
-% imshow(squeeze(MGE(sl,rows,cols)),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
-% ax.Position = [0.02 0.02 0.96 0.94];
-% title('Gradient echo image')
-% 
-% figure;
-% ax = axes;
-% imshow(squeeze(dwFA(sl,rows,cols)),[0 prctile(squeeze(dwFA(sl,rows,cols)), 99.9, 'all')]);
-% ax.Position = [0.02 0.02 0.96 0.94];
+f=figure;
+% f.Position = [680   358   420   600];
+ax = axes;
+imshow(squeeze(MGE(sl,rows,cols)),[0 prctile(squeeze(MGE(sl,rows,cols)), 99.9, 'all')]);
+ax.Position = [0.02 0.02 0.96 0.94];
+title('Gradient echo image')
+
+figure;
+ax = axes;
+imshow(squeeze(dwFA(sl,rows,cols)),[0 prctile(squeeze(dwFA(sl,rows,cols)), 99.9, 'all')]);
+ax.Position = [0.02 0.02 0.96 0.94];
 % 
 % figure;
 % ax = axes;

@@ -5,20 +5,19 @@ projectfolder = pwd;
 
 %% Sample and image details
 
-% Samples
+SampleNames = {...
+    '20250224_UQ4', ...
+    ...'20250407_UQ5',...
+    '20250414_UQ6', ...
+    '20250522_UQ7', ...
+    '20250523_UQ8', ...
+    '20250524_UQ9',...
+    '20260128_UQ10',...
+    '20260315_UQ11',...
+    '20260630_UQ12',...
+    '20260702_UQ13'...
+    };
 
-% SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
-% multisample = true;
-
-SampleNames = {'20250522_UQ7'};
-multisample = false;
-
-%'20250224_UQ4'
-%'20250414_UQ6'
-% '20260128_UQ10'
-% '20260315_UQ11'
-% '20260630_UQ12'
-% '20260702_UQ13'
 
 % Image
 SeriesDescriptions = {
@@ -47,107 +46,124 @@ for seriesindx = 2:length(SeriesDescriptions)
    
     % Load signal measurements (from benign processing)
     signals = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'signals.mat')).signals;
-    signals = squeeze(signals(:,seriesindx,1));
+    signals = squeeze(signals(:,seriesindx,1)); 
 
-    % R2 value
-    RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
-    R2 = RESULTS(seriesindx).R2;
+    % % R2 value
+    % RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
+    % R2 = RESULTS(seriesindx).R2;
     
-    % Initialise arrays
-    SampleNums = [];
-    Predicted = [];
-    Measured = [];
-    COMP = [];
 
-    try
     
     % Loop over samples
     for sampleindx = 1:length(SampleNames)
-    
-        SampleName = SampleNames{sampleindx};
 
-        samplenum = SampleName(end);
-        if strcmp(SampleName(end-4), '_')
-            samplenum = SampleName(end-1:end);
-        end
-    
-        ImageFolder = fullfile(projectfolder, 'Imaging Data', 'MAT DN', SampleName, SeriesDescription);
-        ImageArray = load(fullfile(ImageFolder,'normalisedImageArray.mat')).ImageArray;
+        % Initialise arrays
+        SampleNums = [];
+        Predicted = [];
+        Measured = [];
+        COMP = [];
 
-        % Load composition
-        COMPOSITION = load(fullfile(projectfolder, 'Outputs', 'Masks', SampleName, 'SE_b0_SPOIL5% (DS)', 'COMPOSITION.mat')).COMPOSITION;
+
+        try
+    
+            SampleName = SampleNames{sampleindx};
+    
+            samplenum = SampleName(end);
+            if strcmp(SampleName(end-4), '_')
+                samplenum = SampleName(end-1:end);
+            end
         
-        % Predicted signals
-        signals = reshape(signals, [1,1,1,3]);
-        pred = sum(COMPOSITION.*repmat(signals, [size(COMPOSITION, 1:3)]), 4);
+            ImageFolder = fullfile(projectfolder, 'Imaging Data', 'MAT DN', SampleName, SeriesDescription);
+            ImageArray = load(fullfile(ImageFolder,'normalisedImageArray.mat')).ImageArray;
     
-
-        % PER SAMPLE
-        samplelabels = {'N', 'M', 'B'};
-    
-        for slabindx = 1:length(samplelabels)
-    
-            samplelabel = samplelabels{slabindx};
-    
-            MASK = load(fullfile(projectfolder, 'Outputs', 'Masks', SampleName, 'SE_b0_SPOIL5% (DS)', [samplelabel 'MASK.mat'])).([samplelabel 'MASK']);
-    
-            % Predicted signal
-            this_pred = pred(logical(MASK));
-    
-            % Measured signal
-            this_measure = ImageArray(logical(MASK));
-    
-            % COMPOSITION
-            this_COMP = reshape(COMPOSITION, [], 3);
-            flatMASK = MASK(:);
-            this_COMP = this_COMP(logical(flatMASK), :);
-    
-            SampleShortNum = [samplenum samplelabel];
-    
-            disp(SampleShortNum)
-            SampleNums = [SampleNums; repmat({SampleShortNum}, length(this_pred), 1)];
-            Predicted = [Predicted; this_pred];
-            Measured = [Measured; this_measure];
-            COMP = [COMP; this_COMP];
-    
-        end
-    
-    end
-
-    catch
-        disp(['Error for ' SampleName ' Series ' SeriesDescription])
-        continue
-    end
-    
-    % Save measured and predicted signals
-
-    switch multisample
-
-        case true
-            folder = fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample');
-            mkdir(folder)
-            save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
-            save(fullfile(folder, 'COMP.mat'), 'COMP')
+            % Load composition
+            COMPOSITION = load(fullfile(projectfolder, 'Outputs', 'Masks', SampleName, 'SE_b0_SPOIL5% (DS)', 'COMPOSITION.mat')).COMPOSITION;
             
-            seriesfolder = fullfile(folder, SeriesDescription);
-            mkdir(seriesfolder);
-            save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
-            save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
-
-
-        case false
-
+            % Predicted signals
+            signals = reshape(signals, [1,1,1,3]);
+            pred = sum(COMPOSITION.*repmat(signals, [size(COMPOSITION, 1:3)]), 4);
+        
+    
+            % PER SAMPLE
+            samplelabels = {'N', 'M', 'B'};
+        
+            for slabindx = 1:length(samplelabels)
+        
+                samplelabel = samplelabels{slabindx};
+        
+                MASK = load(fullfile(projectfolder, 'Outputs', 'Masks', SampleName, 'SE_b0_SPOIL5% (DS)', [samplelabel 'MASK.mat'])).([samplelabel 'MASK']);
+        
+                % Predicted signal
+                this_pred = pred(logical(MASK));
+        
+                % Measured signal
+                this_measure = ImageArray(logical(MASK));
+        
+                % COMPOSITION
+                this_COMP = reshape(COMPOSITION, [], 3);
+                flatMASK = MASK(:);
+                this_COMP = this_COMP(logical(flatMASK), :);
+        
+                SampleShortNum = [samplenum samplelabel];
+        
+                disp(SampleShortNum)
+                SampleNums = [SampleNums; repmat({SampleShortNum}, length(this_pred), 1)];
+                Predicted = [Predicted; this_pred];
+                Measured = [Measured; this_measure];
+                COMP = [COMP; this_COMP];
+        
+            end
+    
+    
             folder = fullfile(projectfolder, 'Outputs', 'Signals', SampleName);
             mkdir(folder)
             save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
             save(fullfile(folder, 'COMP.mat'), 'COMP')
-            
+    
             seriesfolder = fullfile(folder, SeriesDescription);
             mkdir(seriesfolder);
             save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
             save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
 
 
+        catch
+            disp(['Error for ' SampleName ' Series ' SeriesDescription])
+            continue
+        end
+    
     end
+
+
+    
+    % % Save measured and predicted signals
+    % 
+    % switch multisample
+    % 
+    %     case true
+    %         folder = fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample');
+    %         mkdir(folder)
+    %         save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
+    %         save(fullfile(folder, 'COMP.mat'), 'COMP')
+    % 
+    %         seriesfolder = fullfile(folder, SeriesDescription);
+    %         mkdir(seriesfolder);
+    %         save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
+    %         save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
+    % 
+    % 
+    %     case false
+    % 
+    %         folder = fullfile(projectfolder, 'Outputs', 'Signals', SampleName);
+    %         mkdir(folder)
+    %         save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
+    %         save(fullfile(folder, 'COMP.mat'), 'COMP')
+    % 
+    %         seriesfolder = fullfile(folder, SeriesDescription);
+    %         mkdir(seriesfolder);
+    %         save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
+    %         save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
+    % 
+    % 
+    % end
 
 end

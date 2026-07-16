@@ -6,16 +6,18 @@ projectfolder = pwd;
 %% Image details
 
 % Sample(s) names
-samplename = ...'Multi-sample';
-                ...'20250224_UQ4';
-           ...'20250414_UQ6';
-            '20250522_UQ7';
-           ...'20250523_UQ8';
-           ... '20250524_UQ9';
-           ...'20260128_UQ10';
-           ...'20260315_UQ11';
-           ...'20260630_UQ12';
-           ...'20260702_UQ13';
+samplenames = {...
+           '20250224_UQ4',...
+           ...'20250407_UQ5',...
+           '20250414_UQ6',...
+           '20250522_UQ7',...
+           '20250523_UQ8',...
+           '20250524_UQ9',...
+           '20260128_UQ10',...
+           '20260315_UQ11',...
+           '20260630_UQ12',...
+           '20260702_UQ13'...
+           };
                 
 % Images
 SeriesDescriptions = {
@@ -35,175 +37,186 @@ SeriesDescriptions = {
 scheme = load(fullfile(projectfolder, "Schemes", "20250224_UQ4 AllDELTA.mat")).scheme;
 nscheme = length(scheme);
 
-folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
-COMP = load(fullfile(folder, "COMP.mat")).COMP;
-SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
-Nvoxel = length(SampleNums);
+
+%% Loop over samples
+
+for samplename = samplenames
 
 
-%% Load predicted and measured signals
+    samplename = samplename{:}
 
-% Initialise array for predicted signals
-MeasuredSignals = ones(Nvoxel, nscheme);
-PredictedSignals = ones(Nvoxel, nscheme);
-
-for seriesindx = 2:length(SeriesDescriptions)
+    folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
+    COMP = load(fullfile(folder, "COMP.mat")).COMP;
+    SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
+    Nvoxel = length(SampleNums)
     
-    SeriesDescription = SeriesDescriptions{seriesindx};
+    
+    
+    %% Load predicted and measured signals
+    
+    % Initialise array for predicted signals
+    MeasuredSignals = ones(Nvoxel, nscheme);
+    PredictedSignals = ones(Nvoxel, nscheme);
+    
+    for seriesindx = 2:length(SeriesDescriptions)
+        
+        SeriesDescription = SeriesDescriptions{seriesindx};
+    
+        bval = scheme(seriesindx).bval;
+        DELTA = scheme(seriesindx).DELTA;
+    
+        % Load measured and predicted signals
+        this_measured = load(fullfile(folder, SeriesDescription, "Measured.mat")).Measured;
+        this_pred = load(fullfile(folder, SeriesDescription, "Predicted.mat")).Predicted;
+    
+        MeasuredSignals(:,seriesindx) = this_measured;
+        PredictedSignals(:,seriesindx) = this_pred;
+    
+    end
+    
+    
+    %% Run ADC modelling
+    
+    modelname = 'ADC';
+    fittingtechnique = 'LSQ';
+    Nparam = 2;
+    
+    D = 1; Dlb = 0.1; Dub = 3;
+    S0 = 1; S0lb = 0.9; S0ub = 1.1;
+    
+    beta0 = [S0, D];
+    lb = [S0lb, Dlb];
+    ub = [S0ub, Dub];
+    
+    % Regularisation
+    lambda0=0e-2;
+    lambda = lambda0*ones(1,Nparam);
+    
+    
+    % == MEASURED
+    
+    Y = reshape(MeasuredSignals, [Nvoxel, 1 , nscheme]);
+    
+    [~, measured_D] = diffusion_model_fit( ...
+        Y, ...
+        scheme, ...
+        modelname = modelname,...
+        fittingtechnique = fittingtechnique,...
+        Nparam = Nparam,...
+        beta0=beta0,...
+        lambda=lambda,...
+        lb=lb,...
+        ub=ub...
+        );
+    
+    % Save
+    folder = fullfile(projectfolder, 'Outputs', 'Model Fitting',  samplename, modelname, 'Measured');
+    mkdir(folder);
+    save(fullfile(folder, 'D.mat'), 'measured_D')
+    save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
+    
+    % == PREDICTED
+    
+    Y = reshape(PredictedSignals, [Nvoxel, 1 , nscheme]);
+    
+    % Normalise for S0 
+    Y(:,:,2:end) = Y(:,:,2:end)./(sum(COMP,2));
+    
+    [~, pred_D] = diffusion_model_fit( ...
+        Y, ...
+        scheme, ...
+        modelname = modelname,...
+        fittingtechnique = fittingtechnique,...
+        Nparam = Nparam,...
+        beta0=beta0,...
+        lambda=lambda,...
+        lb=lb,...
+        ub=ub...
+        );
+    
+    % Save
+    folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', samplename, modelname, 'Predicted');
+    mkdir(folder);
+    save(fullfile(folder, 'D.mat'), 'pred_D')
+    save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
+    
+    
+    
+    %% Run Ball+Sphere Modelling
+    
+    modelname = 'Ball+Sphere';
+    fittingtechnique = 'LSQ';
+    
+    % Nparam = 5;
+    % beta0 = [0.24, 6.4, 0.6, 0.8, 1];
+    % lb = [0, 2, 0.4, 0.2, 1];
+    % ub = [1, 12, 0.8, 3, 1];
+    
+    % FIXED RADIUS AND FIXED DS (R=6.5um, Ds=0.4)
+    Nparam = 5;
+    beta0 = [0.24, 6.5, 0.4, 0.8, 1];
+    lb = [0, 6.5, 0.4, 0.1, 1];
+    ub = [1, 6.5, 0.4, 3, 1];
+    
+    % Regularisation (Don't regluarlise parameters which would change
+    % significantly in purely fluid voxel i.e. Db and fs) Everything else is
+    % fixed anyway...
+    lambda0 = 0e-2;
+    lambda = lambda0*[0,1,1,0,1];
+    
+    
+    % == PREDICTED
+    
+    Y = reshape(PredictedSignals, [Nvoxel, 1 , nscheme]);
+    
+    % Normalise for S0
+    Y(:,:,2:end) = Y(:,:,2:end)./(sum(COMP,2));
+    
+    [pred_fs, pred_R, pred_Ds, pred_Db, ~, ~] = diffusion_model_fit( ...
+        Y, ...
+        scheme, ...
+        modelname = modelname,...
+        fittingtechnique = fittingtechnique,...
+        Nparam = Nparam,...
+        beta0=beta0,...
+        lambda=lambda,...
+        lb=lb,...
+        ub=ub...
+        );
+    
+    % Save
+    folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', samplename, modelname, 'Predicted');
+    mkdir(folder);
+    save(fullfile(folder, 'fs.mat'), 'pred_fs')
+    save(fullfile(folder, 'Db.mat'), 'pred_Db')
+    save(fullfile(folder, 'Ds.mat'), 'pred_Ds')
+    save(fullfile(folder, 'R.mat'), 'pred_R')
+    save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
+    
+    % == MEASURED
+    
+    Y = reshape(MeasuredSignals, [Nvoxel, 1 , nscheme]);
+    
+    [measured_fs, measured_R, measured_Ds, measured_Db, ~, ~] = diffusion_model_fit( ...
+        Y, ...
+        scheme, ...
+        modelname = modelname,...
+        fittingtechnique = fittingtechnique,...
+        Nparam = Nparam,...
+        beta0=beta0,...
+        lambda=lambda,...
+        lb=lb,...
+        ub=ub...
+        );
+    
+    % Save
+    folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', samplename, modelname, 'Measured');
+    mkdir(folder);
+    save(fullfile(folder, 'fs.mat'), 'measured_fs')
+    save(fullfile(folder, 'Db.mat'), 'measured_Db')
+    save(fullfile(folder, 'Ds.mat'), 'measured_Ds')
+    save(fullfile(folder, 'R.mat'), 'measured_R')
+    save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
 
-    bval = scheme(seriesindx).bval;
-    DELTA = scheme(seriesindx).DELTA;
-
-    % Load measured and predicted signals
-    this_measured = load(fullfile(folder, SeriesDescription, "Measured.mat")).Measured;
-    this_pred = load(fullfile(folder, SeriesDescription, "Predicted.mat")).Predicted;
-
-    MeasuredSignals(:,seriesindx) = this_measured;
-    PredictedSignals(:,seriesindx) = this_pred;
 
 end
-
-
-%% Run ADC modelling
-
-modelname = 'ADC';
-fittingtechnique = 'LSQ';
-Nparam = 2;
-
-D = 1; Dlb = 0.1; Dub = 3;
-S0 = 1; S0lb = 0.9; S0ub = 1.1;
-
-beta0 = [S0, D];
-lb = [S0lb, Dlb];
-ub = [S0ub, Dub];
-
-% Regularisation
-lambda0=0e-2;
-lambda = lambda0*ones(1,Nparam);
-
-
-% == MEASURED
-
-Y = reshape(MeasuredSignals, [Nvoxel, 1 , nscheme]);
-
-[~, measured_D] = diffusion_model_fit( ...
-    Y, ...
-    scheme, ...
-    modelname = modelname,...
-    fittingtechnique = fittingtechnique,...
-    Nparam = Nparam,...
-    beta0=beta0,...
-    lambda=lambda,...
-    lb=lb,...
-    ub=ub...
-    );
-
-% Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Measured', samplename, modelname);
-mkdir(folder);
-save(fullfile(folder, 'D.mat'), 'measured_D')
-save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
-
-% == PREDICTED
-
-Y = reshape(PredictedSignals, [Nvoxel, 1 , nscheme]);
-
-% Normalise for S0 
-Y(:,:,2:end) = Y(:,:,2:end)./(sum(COMP,2));
-
-[~, pred_D] = diffusion_model_fit( ...
-    Y, ...
-    scheme, ...
-    modelname = modelname,...
-    fittingtechnique = fittingtechnique,...
-    Nparam = Nparam,...
-    beta0=beta0,...
-    lambda=lambda,...
-    lb=lb,...
-    ub=ub...
-    );
-
-% Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Predicted', samplename, modelname);
-mkdir(folder);
-save(fullfile(folder, 'D.mat'), 'pred_D')
-save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
-
-
-
-%% Run Ball+Sphere Modelling
-
-modelname = 'Ball+Sphere';
-fittingtechnique = 'LSQ';
-
-% Nparam = 5;
-% beta0 = [0.24, 6.4, 0.6, 0.8, 1];
-% lb = [0, 2, 0.4, 0.2, 1];
-% ub = [1, 12, 0.8, 3, 1];
-
-% FIXED RADIUS AND FIXED DS (R=6um, Ds=0.6)
-Nparam = 5;
-beta0 = [0.24, 6, 0.6, 0.8, 1];
-lb = [0, 6, 0.6, 0.1, 1];
-ub = [1, 6, 0.6, 3, 1];
-
-% Regularisation (Don't regluarlise parameters which would change
-% significantly in purely fluid voxel i.e. Db and fs) Everything else is
-% fixed anyway...
-lambda0 = 0e-2;
-lambda = lambda0*[0,1,1,0,1];
-
-
-% == PREDICTED
-
-Y = reshape(PredictedSignals, [Nvoxel, 1 , nscheme]);
-
-% Normalise for S0
-Y(:,:,2:end) = Y(:,:,2:end)./(sum(COMP,2));
-
-[pred_fs, pred_R, pred_Ds, pred_Db, ~, ~] = diffusion_model_fit( ...
-    Y, ...
-    scheme, ...
-    modelname = modelname,...
-    fittingtechnique = fittingtechnique,...
-    Nparam = Nparam,...
-    beta0=beta0,...
-    lambda=lambda,...
-    lb=lb,...
-    ub=ub...
-    );
-
-% Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Predicted', samplename, modelname);
-mkdir(folder);
-save(fullfile(folder, 'fs.mat'), 'pred_fs')
-save(fullfile(folder, 'Db.mat'), 'pred_Db')
-save(fullfile(folder, 'Ds.mat'), 'pred_Ds')
-save(fullfile(folder, 'R.mat'), 'pred_R')
-save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
-
-% == MEASURED
-
-Y = reshape(MeasuredSignals, [Nvoxel, 1 , nscheme]);
-
-[measured_fs, measured_R, measured_Ds, measured_Db, ~, ~] = diffusion_model_fit( ...
-    Y, ...
-    scheme, ...
-    modelname = modelname,...
-    fittingtechnique = fittingtechnique,...
-    Nparam = Nparam,...
-    beta0=beta0,...
-    lambda=lambda,...
-    lb=lb,...
-    ub=ub...
-    );
-
-% Save
-folder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Measured', samplename, modelname);
-mkdir(folder);
-save(fullfile(folder, 'fs.mat'), 'measured_fs')
-save(fullfile(folder, 'Db.mat'), 'measured_Db')
-save(fullfile(folder, 'Ds.mat'), 'measured_Ds')
-save(fullfile(folder, 'R.mat'), 'measured_R')
-save(fullfile(folder, 'SampleNums.mat'), "SampleNums");
-

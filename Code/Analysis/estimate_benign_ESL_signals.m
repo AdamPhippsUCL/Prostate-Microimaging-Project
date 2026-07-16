@@ -3,18 +3,24 @@
 clear;
 projectfolder = pwd;
 
+
 %% Sample and image details
 
 % Sample
 multisample = true;
-SampleNames = {'20250224_UQ4', '20250407_UQ5', '20250414_UQ6', '20250522_UQ7', '20250523_UQ8', '20250524_UQ9'};
+SampleNames = {...
+    '20250224_UQ4', ...
+    ...'20250407_UQ5', ...
+    '20250414_UQ6', ...
+    '20250522_UQ7', ...
+    '20250523_UQ8', ...
+    '20250524_UQ9'};
 
 schemename = '20250224_UQ4 AllDELTA';
 schemesfolder = fullfile(projectfolder, 'Schemes');
-load(fullfile(schemesfolder, schemename));
+scheme=load(fullfile(schemesfolder, schemename)).scheme;
 nscheme = length(scheme);
 Nimg = nscheme;
-
 
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
@@ -42,6 +48,8 @@ switch UseDenoisedData
 end
 
 
+%% Load data
+
 composition = [];
 imgs = [];
 samplenums = [];
@@ -49,18 +57,6 @@ samplenums = [];
 for sindx = 1:length(SampleNames)
 
     samplename = SampleNames{sindx};
-
-    % == Load masks
-
-    baseseriesdescription = '3DMGE_20u';
-    baseimg = load(fullfile(ImagingDataFolder, samplename, baseseriesdescription, 'avgImageArray.mat' )).avgImageArray;
-
-    maskfolder = fullfile(projectfolder, 'Outputs', 'Masks', samplename, baseseriesdescription);
-    EPITHELIUM = load(fullfile(maskfolder, 'EPITHELIUM.mat')).EPITHELIUM;
-    STROMA = load(fullfile(maskfolder, 'STROMA.mat')).STROMA;
-    LUMEN = load(fullfile(maskfolder, 'LUMEN.mat')).LUMEN;
-    szbase = size(EPITHELIUM);
-
 
     % ======= Load normalised images
 
@@ -70,7 +66,6 @@ for sindx = 1:length(SampleNames)
     thisfolder = fullfile(ImagingDataFolder, samplename, SeriesDescription);
     b0img = load(fullfile(thisfolder, 'axialImageArray.mat')).ImageArray;  
     szimg = size(b0img, 1:3);
-
 
     % Initialise array for normalised images
     IMGS = ones([Nimg, szimg]);
@@ -87,10 +82,6 @@ for sindx = 1:length(SampleNames)
     end
 
 
-    disp('')
-
-
-
     szmap = szimg;
 
     % LOAD COMPOSITION AND SAMPLE MASKS
@@ -99,7 +90,6 @@ for sindx = 1:length(SampleNames)
     NMASK = load(fullfile(folder, 'NMASK.mat')).NMASK;
     MMASK = load(fullfile(folder, 'MMASK.mat')).MMASK;
     BMASK = load(fullfile(folder, 'BMASK.mat')).BMASK;
-
 
     
     % Select voxels IN BENIGN SAMPLES AND WITH NON-ZERO composition
@@ -133,10 +123,15 @@ for sindx = 1:length(SampleNames)
     samplenums = [samplenums; (3*sindx-2)*this_bmask + (3*sindx-1)*this_mmask + (3*sindx)*this_nmask];
     composition = [composition; thiscomposition];
     imgs = [imgs, thisimgs];
-
-    
-
+   
 end
+
+clear seriesindx sindx samplename SeriesDescription
+clear this_bmask this_mmask this_nmask this_imgs thiscomposition bool thisimgs
+clear COMPOSITION NMASK MMASK BMASK
+clear normimg IMGS b0img
+
+
 
 
 %% ESL signal estimation (Linear model fitting)
@@ -147,14 +142,8 @@ X = composition;
 % Linear regression function (at bottom of script)
 func = @(b, X) signal_func(b, X);
 
-% Initial guess and bounds [S_e, S_s, S_l]
-beta0 = [0.5, 0.5, 0.5];
-lb = [0,0,0];
-ub=[1,1,1];
-
 % Lumen diffusivity
 Dl = 2.0e-3;
-err = 0.001;
 
 % Initialise array for signal measurements
 signals = zeros(3, Nimg, 4);
@@ -179,12 +168,11 @@ for imgindx = 1:Nimg
         continue
     end
 
+
     y = transpose(imgs(imgindx, :));
 
     % Set lumen signal
     Sl = exp(-scheme(imgindx).bval*Dl);
-    lb(3)=Sl-err;
-    ub(3)=Sl+err;
 
     % Apply fitting
     y=y-X(:,3)*Sl;
@@ -197,7 +185,11 @@ for imgindx = 1:Nimg
 
     signals(1:2,imgindx,1) = beta_fit;
     signals(3,imgindx,1) = Sl;
-    
+
+    % f=figure;    
+    % scatter(y-residuals, residuals, CData = X)
+    % close(f)
+
 
     % == BOOTSTRAPPING 
 
@@ -236,6 +228,11 @@ for imgindx = 1:Nimg
 end
 
 RESULTS(1).X = X;
+
+clear y mdl beta_fit R2 residuals imgindx Sl Dl
+clear N BootR2s BootFits bootstrap_indices thismdl thisbeta_fit bindx
+
+
 
 
 %% Display estimated signals

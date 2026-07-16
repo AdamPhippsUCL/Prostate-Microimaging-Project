@@ -6,12 +6,9 @@ projectfolder=pwd;
 
 %% Load modelling results
 
-samplename = '20250522_UQ7';
+samplename = '20260702_UQ13';
 %'20250224_UQ4'
 %'20250414_UQ6'
-% '20250522_UQ7'
-% '20250523_UQ8'
-% '20250524_UQ9
 % '20260128_UQ10'
 % '20260315_UQ11'
 % '20260630_UQ12'
@@ -21,12 +18,18 @@ samplename = '20250522_UQ7';
 ImageFolder = fullfile(pwd, 'Imaging Data', 'MAT DN', samplename);
 MGE = load(fullfile(ImageFolder, '3DMGE_20u', 'avgImageArray.mat')).avgImageArray;
 
-% Segmentation
-mask =
 
 %% Load modelling results
 
-sample_num = '7B';
+% ====== ESL modelling
+
+RESULTS = load(fullfile(projectfolder, 'Outputs', 'Model FItting', 'ESL signal profiles', 'Multi-sample', 'RESULTS.mat')).RESULTS;
+E_ADC = RESULTS(and(strcmp({RESULTS.ModelName},'ADC'), strcmp({RESULTS.Component},'E'))).ModelParams(2);
+E_fs = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Component},'E'))).ModelParams(1);
+E_Db = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Component},'E'))).ModelParams(4);
+
+
+sample_num = '13N';
 
 folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;  
@@ -44,16 +47,16 @@ output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
 
 
 % Load parameter estimates from measured signals
-measured_fs = load(fullfile(output_folder, 'Measured', samplename, ModelName, 'fs')).measured_fs;
-measured_Db = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'Db')).measured_Db;
+measured_fs = load(fullfile(output_folder, samplename, ModelName, 'Measured', 'fs')).measured_fs;
+measured_Db = load(fullfile(output_folder, samplename, ModelName, 'Measured', 'Db')).measured_Db;
 
 measured_fs = measured_fs(Bools);
 measured_Db = measured_Db(Bools);
 
 
 % Load parameter estimates from predicted signals
-pred_fs = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'fs')).pred_fs;
-pred_Db = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'Db')).pred_Db;
+pred_fs = load(fullfile(output_folder, samplename, ModelName, 'Predicted', 'fs')).pred_fs;
+pred_Db = load(fullfile(output_folder, samplename, ModelName, 'Predicted', 'Db')).pred_Db;
 
 pred_fs = pred_fs(Bools);
 pred_Db = pred_Db(Bools);
@@ -69,12 +72,12 @@ fittingtechnique = 'LSQ';
 output_folder = fullfile(projectfolder, 'Outputs', 'Model Fitting' );
 
 % Load parameter estimates from measured signals
-measured_ADC = load(fullfile(output_folder, 'Measured',  samplename, ModelName, 'D')).measured_D;
+measured_ADC = load(fullfile(output_folder, samplename, ModelName, 'Measured', 'D')).measured_D;
 
 measured_ADC = measured_ADC(Bools);
 
 % Load parameter estimates from predicted signals
-pred_ADC = load(fullfile(output_folder, 'Predicted', samplename, ModelName, 'D')).pred_D;
+pred_ADC = load(fullfile(output_folder, samplename, ModelName, 'Predicted', 'D')).pred_D;
 
 pred_ADC = pred_ADC(Bools);
 
@@ -106,15 +109,14 @@ v2=length(disp_v2);
 
 MGE_disp_v2 = (min(disp_inds_v2)-2)*2*8+1:(max(disp_inds_v2)+1)*2*8;
 
-
 axv = 0.6;
 axh = 0.5*(h/v1)*axv;
 
 
+slices = 6:9;
+
 
 %% MGE individual figures
-
-slices=6:10;
 
 for sl=slices
 
@@ -139,14 +141,11 @@ end
 
 %% MGE all in one figure
 
-slices=6:9;
-
-
 f=figure;
 fpos = f.Position;
 fpos(3)=(axh/axv)*fpos(3);
 fpos(4)=numel(slices)*fpos(4);
-% fpos(2)=0;
+fpos(2)=0;
 f.Position = fpos;
 tiledlayout(numel(slices),1, 'TileSpacing','compact');
 
@@ -168,15 +167,18 @@ end
 
 
 exportgraphics(f, ...
-    fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_MGE.png']) ...
+    fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_MGE.png']) ...
     ,'BackgroundColor','none','Resolution',300)
 
 
 
 %% ADC 
 
-pivot=0.462;
-sigma=0.218;
+ADC_mean_bias_highE = load(fullfile(output_folder, 'Benign RL', 'ADC', 'ADC_mean_bias_highE.mat')).ADC_bias_highE;
+ADC_sigma_highE=load(fullfile(output_folder, 'Benign RL', 'ADC', 'ADC_sigma_highE.mat')).ADC_sigma_highE;
+
+pivot=E_ADC+ADC_mean_bias_highE;
+sigma=ADC_sigma_highE;
 
 ADC_Measured = NaN*ones(size(SampleMask));
 ADC_Measured(SampleMask==1) = measured_ADC;
@@ -184,7 +186,6 @@ ADC_Measured(SampleMask==1) = measured_ADC;
 
 %% ADC Individual figures
 
-slices=4:11;
 
 for sl=slices
     this_cs = squeeze(ADC_Measured(sl,disp_v1,disp_h));
@@ -220,13 +221,11 @@ end
 
 %% ADC All in one figure
 
-slices=6:9;
-
 f=figure;
 fpos = f.Position;
 fpos(3)=(axh/axv)*fpos(3);
 fpos(4)=numel(slices)*fpos(4);
-% fpos(2)=0;
+fpos(2)=0;
 f.Position = fpos;
 tiledlayout(numel(slices),1, 'TileSpacing','compact');
 
@@ -254,16 +253,18 @@ for sl=slices
 end
 
 exportgraphics(f, ...
-    fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_ADC.png']) ...
+    fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_ADC.png']) ...
     ,'BackgroundColor','none','Resolution',300)
 
 
 
 %% fs 
 
-% Display measured modelling results
-pivot=0.254;
-sigma=0.0629;
+fs_mean_bias_highE = load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'fs_mean_bias_highE.mat')).fs_bias_highE;
+fs_sigma_highE=load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'fs_sigma_highE.mat')).fs_sigma_highE;
+
+pivot=E_fs+fs_mean_bias_highE;
+sigma=fs_sigma_highE;
 
 fs_Measured = NaN*ones(size(SampleMask));
 fs_Measured(SampleMask==1) = measured_fs;
@@ -271,8 +272,6 @@ fs_Measured(SampleMask==1) = measured_fs;
 
 %% Individual figures
 
-% First cross section
-slices=5:8;
 
 for sl=slices
 
@@ -309,13 +308,11 @@ end
 
 %% fs All in one figure
 
-slices=6:9;
-
 f=figure;
 fpos = f.Position;
 fpos(3)=(axh/axv)*fpos(3);
 fpos(4)=numel(slices)*fpos(4);
-% fpos(2)=0;
+fpos(2)=0;
 f.Position = fpos;
 tiledlayout(numel(slices),1, 'TileSpacing','compact');
 
@@ -343,15 +340,18 @@ for sl=slices
 end
 
 exportgraphics(f, ...
-    fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_fs.png']) ...
+    fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_fs.png']) ...
     ,'BackgroundColor','none','Resolution',300)
+
 
 
 %% Db
 
-% Display measured modelling results
-pivot=0.657;
-sigma=0.209;
+Db_mean_bias_highE = load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'Db_mean_bias_highE.mat')).Db_bias_highE;
+Db_sigma_highE=load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'Db_sigma_highE.mat')).Db_sigma_highE;
+
+pivot=E_Db+Db_mean_bias_highE;
+sigma=Db_sigma_highE;
 
 Db_Measured = NaN*ones(size(SampleMask));
 Db_Measured(SampleMask==1) = measured_Db;
@@ -359,8 +359,6 @@ Db_Measured(SampleMask==1) = measured_Db;
 
 %% Db individual figures
 
-% First cross section
-slices=6:10;
 
 for sl=slices
 
@@ -386,23 +384,21 @@ for sl=slices
     crameri('-vik', 'pivot', pivot)
     
     title([sample_num ' slice ' num2str(sl)])
-
-    exportgraphics(f, ...
-        fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_Db_sl' num2str(sl) '.png']) ...
-        ,'BackgroundColor','none','Resolution',300)
+    % 
+    % exportgraphics(f, ...
+    %     fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_Db_sl' num2str(sl) '.png']) ...
+    %     ,'BackgroundColor','none','Resolution',300)
 
 end
 
 
 %% Db All in one figure
 
-slices=6:9;
-
 f=figure;
 fpos = f.Position;
 fpos(3)=(axh/axv)*fpos(3);
 fpos(4)=numel(slices)*fpos(4);
-% fpos(2)=0;
+fpos(2)=0;
 f.Position = fpos;
 tiledlayout(numel(slices),1, 'TileSpacing','compact');
 
@@ -430,5 +426,5 @@ for sl=slices
 end
 
 exportgraphics(f, ...
-    fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_Db.png']) ...
+    fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_Db.png']) ...
     ,'BackgroundColor','none','Resolution',300)
