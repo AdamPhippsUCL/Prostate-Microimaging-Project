@@ -1,4 +1,6 @@
-% Script to calculate predicted signals for each voxel (using ESL segmentations and aggregate ESL signal estimates)
+% Script to calculate predicted signals for each voxel (using ESL 
+% segmentations and aggregate ESL signal estimates) and save corresponding
+% measured signal values (from normalised images).
 
 clear;
 projectfolder = pwd;
@@ -18,7 +20,6 @@ SampleNames = {...
     '20260702_UQ13'...
     };
 
-
 % Image
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
@@ -36,7 +37,6 @@ SeriesDescriptions = {
 
 scheme = load(fullfile(projectfolder, "Schemes", "20250224_UQ4 AllDELTA.mat")).scheme;
 
-
 for seriesindx = 2:length(SeriesDescriptions)
 
     SeriesDescription = SeriesDescriptions{seriesindx};
@@ -51,9 +51,7 @@ for seriesindx = 2:length(SeriesDescriptions)
     % % R2 value
     % RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
     % R2 = RESULTS(seriesindx).R2;
-    
 
-    
     % Loop over samples
     for sampleindx = 1:length(SampleNames)
 
@@ -63,9 +61,7 @@ for seriesindx = 2:length(SeriesDescriptions)
         Measured = [];
         COMP = [];
 
-
         try
-    
             SampleName = SampleNames{sampleindx};
     
             samplenum = SampleName(end);
@@ -81,8 +77,7 @@ for seriesindx = 2:length(SeriesDescriptions)
             
             % Predicted signals
             signals = reshape(signals, [1,1,1,3]);
-            pred = sum(COMPOSITION.*repmat(signals, [size(COMPOSITION, 1:3)]), 4);
-        
+            pred = sum(COMPOSITION.*repmat(signals, [size(COMPOSITION, 1:3)]), 4);        
     
             % PER SAMPLE
             samplelabels = {'N', 'M', 'B'};
@@ -114,7 +109,6 @@ for seriesindx = 2:length(SeriesDescriptions)
         
             end
     
-    
             folder = fullfile(projectfolder, 'Outputs', 'Signals', SampleName);
             mkdir(folder)
             save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
@@ -125,45 +119,11 @@ for seriesindx = 2:length(SeriesDescriptions)
             save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
             save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
 
-
         catch
             disp(['Error for ' SampleName ' Series ' SeriesDescription])
             continue
         end
     
     end
-
-
-    
-    % % Save measured and predicted signals
-    % 
-    % switch multisample
-    % 
-    %     case true
-    %         folder = fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample');
-    %         mkdir(folder)
-    %         save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
-    %         save(fullfile(folder, 'COMP.mat'), 'COMP')
-    % 
-    %         seriesfolder = fullfile(folder, SeriesDescription);
-    %         mkdir(seriesfolder);
-    %         save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
-    %         save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
-    % 
-    % 
-    %     case false
-    % 
-    %         folder = fullfile(projectfolder, 'Outputs', 'Signals', SampleName);
-    %         mkdir(folder)
-    %         save(fullfile(folder, 'SampleNums.mat'), 'SampleNums')
-    %         save(fullfile(folder, 'COMP.mat'), 'COMP')
-    % 
-    %         seriesfolder = fullfile(folder, SeriesDescription);
-    %         mkdir(seriesfolder);
-    %         save(fullfile(seriesfolder, 'Measured.mat'), 'Measured')
-    %         save(fullfile(seriesfolder, 'Predicted.mat'), 'Predicted')
-    % 
-    % 
-    % end
 
 end

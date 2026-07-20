@@ -6,7 +6,7 @@ projectfolder=pwd;
 
 %% Load modelling results
 
-samplename = '20260702_UQ13';
+samplename = '20250224_UQ4';
 %'20250224_UQ4'
 %'20250414_UQ6'
 % '20260128_UQ10'
@@ -29,7 +29,7 @@ E_fs = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Co
 E_Db = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Component},'E'))).ModelParams(4);
 
 
-sample_num = '13N';
+sample_num = '4B';
 
 folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;  

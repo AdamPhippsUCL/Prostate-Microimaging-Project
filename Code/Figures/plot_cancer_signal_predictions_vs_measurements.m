@@ -5,15 +5,25 @@ projectfolder = pwd;
 
 %% Sample and image details
 
-% Sample groups
-Cancer_3 = {'4B', '4M'};
-Cancer_4 = {'6N' };
-Benign = {'4N', '5B', '5M', '5N', '6B',  '6M', '7M', '7N', '8B', '8M', '8N', '7B', '9B', '9N' };
+SampleName = ...'20250414_UQ6';
+             '20260128_UQ10';
+            ...'20260315_UQ11';
 
-group = 'Cancer_G4';
+% Sample groups
+Cancer_G33 = {'4B', '4M', '11B', '11N'};
+Cancer_G34 = {'10B', '10M', '10N'};
+Cancer_G44 = {'6N'};
+Benign = {'4N', ...
+        '5B', '5M', '5N',...
+        '6B',  '6M',...
+        '7B', '7M', '7N',...
+        '8B', '8M', '8N',...
+        '9B', '9N' };
+
+group = 'Cancer_G34';
 
 % Image
-seriesindx =11;
+seriesindx =6;
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
     'STEAM_ShortDELTA_15 (DS)',...
@@ -34,25 +44,27 @@ bval = scheme(seriesindx).bval;
 DELTA = scheme(seriesindx).DELTA;
 
 % Load signals + extras
-folder =  fullfile(projectfolder, 'Outputs', 'Signals', 'Multi-sample');
+folder =  fullfile(projectfolder, 'Outputs', 'Signals', SampleName);
 COMP = load(fullfile(folder, "COMP.mat")).COMP;
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
 Measured = load(fullfile(folder, SeriesDescription, "Measured.mat")).Measured;
 Predicted = load(fullfile(folder, SeriesDescription, "Predicted.mat")).Predicted;
 
-% R2 value
-RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
-R2 = RESULTS(seriesindx).R2;
-clear RESULTS
+% % R2 value
+% RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
+% R2 = RESULTS(seriesindx).R2;
+% clear RESULTS
 
 % For samples in group only
 switch group
     case 'Benign'
         Bools = ismember(SampleNums, Benign);
-    case 'Cancer_G3'
-        Bools = ismember(SampleNums, Cancer_3);
-    case 'Cancer_G4'
-        Bools = ismember(SampleNums, Cancer_4);
+    case 'Cancer_G33'
+        Bools = ismember(SampleNums, Cancer_G33);
+    case 'Cancer_G34'
+        Bools = ismember(SampleNums, Cancer_G34);
+    case 'Cancer_G44'
+        Bools = ismember(SampleNums, Cancer_G44);
 end
 
 Pred = Predicted(Bools);
@@ -156,5 +168,5 @@ ax.FontSize = 12;
 
 f.Position = [680   458   600   380];
 
-saveas(f, fullfile(projectfolder, 'Figures', [group ' Signal Residuals b' num2str(bval) '_Delta' num2str(DELTA) '.png']))
+% saveas(f, fullfile(projectfolder, 'Figures', [group ' Signal Residuals b' num2str(bval) '_Delta' num2str(DELTA) '.png']))
 
