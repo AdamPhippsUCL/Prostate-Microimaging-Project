@@ -3,7 +3,7 @@
 clear;
 projectfolder = pwd;
 
-samplename = '20250524_UQ9';
+samplename = '20250522_UQ7';
 
 %'20250224_UQ4'
 %'20250407_UQ5'
@@ -30,17 +30,17 @@ sv1.DisplayRange = [0 2e-7];
 
 %% High-res diffusion
 
-% Load FA maps
-FA = load(fullfile(projectfolder,'Outputs', 'Model Fitting', samplename, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'dwFA.mat')).dwFA;
-D = load(fullfile(projectfolder,'Outputs', 'Model Fitting', samplename, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'D.mat')).D;
-
-figure;
-sv2 = sliceViewer(FA); 
-sv2.DisplayRange = [0 0.8]; 
-
-figure;
-sv2 = sliceViewer(D); 
-sv2.DisplayRange = [0 2e-3]; 
+% % Load FA maps
+% FA = load(fullfile(projectfolder,'Outputs', 'Model Fitting', samplename, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'dwFA.mat')).dwFA;
+% D = load(fullfile(projectfolder,'Outputs', 'Model Fitting', samplename, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'D.mat')).D;
+% 
+% figure;
+% sv2 = sliceViewer(FA); 
+% sv2.DisplayRange = [0 0.8]; 
+% 
+% figure;
+% sv2 = sliceViewer(D); 
+% sv2.DisplayRange = [0 2e-3]; 
 
 
 %% Segmentation
@@ -62,13 +62,18 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 
 %% Save slice
 
-MGE_slice = MGE(:,:,282);
+sl=546;
+MGE_slice = MGE(:,:,sl);
 
 f=figure;
 imshow(MGE_slice, [])
+
+% Add segmentation
+hold on
+mask = imshow(squeeze(displaymasks(:,:,sl,:)));
+set(mask, 'AlphaData', 0.2)
+
 exportgraphics(f, 'test.png')
-
-
 % D_slice = D(:,:,125);
 % 
 % f=figure;

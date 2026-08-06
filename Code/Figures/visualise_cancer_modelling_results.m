@@ -6,7 +6,7 @@ projectfolder=pwd;
 
 %% Load modelling results
 
-samplename = '20250224_UQ4';
+samplename = '20260128_UQ10';
 %'20250224_UQ4'
 %'20250414_UQ6'
 % '20260128_UQ10'
@@ -29,7 +29,7 @@ E_fs = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Co
 E_Db = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Component},'E'))).ModelParams(4);
 
 
-sample_num = '4B';
+sample_num = '10N';
 
 folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;  
@@ -166,9 +166,9 @@ for sl=slices
 end
 
 
-exportgraphics(f, ...
-    fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_MGE.png']) ...
-    ,'BackgroundColor','none','Resolution',300)
+% exportgraphics(f, ...
+%     fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_MGE.png']) ...
+%     ,'BackgroundColor','none','Resolution',300)
 
 
 
@@ -252,9 +252,9 @@ for sl=slices
 
 end
 
-exportgraphics(f, ...
-    fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_ADC.png']) ...
-    ,'BackgroundColor','none','Resolution',300)
+% exportgraphics(f, ...
+%     fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_ADC.png']) ...
+%     ,'BackgroundColor','none','Resolution',300)
 
 
 

@@ -21,7 +21,7 @@ ylim([0, 1.1*max(h.Values)])
 xlabel('Volume fraction')
 ylabel('Number of voxels')
 title('Epithelium')
-saveas(f, fullfile(projectfolder, 'Figures', 'Supplementary', 'Epithelium_Volume_Frac_Dist.png'))
+saveas(f, fullfile(projectfolder, 'Thesis Figures', 'Benign ESL Distributions', 'Epithelium.png'))
 
 % Stroma
 f=figure;
@@ -30,7 +30,7 @@ ylim([0, 1.1*max(h.Values)])
 xlabel('Volume fraction')
 ylabel('Number of voxels')
 title('Stroma')
-saveas(f, fullfile(projectfolder, 'Figures', 'Supplementary', 'Stroma_Volume_Frac_Dist.png'))
+saveas(f, fullfile(projectfolder, 'Thesis Figures', 'Benign ESL Distributions', 'Stroma.png'))
 
 % Lumen/Fluid
 f=figure;
@@ -39,4 +39,4 @@ ylim([0, 1.1*max(h.Values)])
 xlabel('Volume fraction')
 ylabel('Number of voxels')
 title('Lumen/Fluid')
-saveas(f, fullfile(projectfolder, 'Figures', 'Supplementary', 'Lumen_Volume_Frac_Dist.png'))
+saveas(f, fullfile(projectfolder, 'Thesis Figures', 'Benign ESL Distributions', 'Lumen.png'))

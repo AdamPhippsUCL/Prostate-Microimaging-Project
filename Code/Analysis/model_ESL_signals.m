@@ -266,7 +266,7 @@ for compindx = 1:length(components)
             grid on
             ax = gca();
             ax.FontSize = 12;
-            saveas(f, fullfile(projectfolder, 'Figures', ['Model_Predictions_' T '_.png']))
+            saveas(f, fullfile(projectfolder, 'Thesis Figures', 'Benign Aggregate Signal Estimates', ['Model_Predictions_' T '_.png']))
 
         end
 

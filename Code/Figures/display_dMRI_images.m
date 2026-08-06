@@ -5,7 +5,7 @@ projectfolder = pwd;
 
 %% Sample and image details
 
-SampleName = '20250224_UQ4';
+SampleName = '20250524_UQ9';
 
 SeriesDescriptions = {...
     'SE_b0_SPOIL5%',...
@@ -64,8 +64,8 @@ title('b=0 (Downsampled)')
 folder = fullfile(projectfolder, 'Thesis Figures', 'dMRI Images', SampleName);
 mkdir(folder)
 
-saveas(f1, fullfile(folder, [SeriesDescription '.png']))
-saveas(f2, fullfile(folder, [SeriesDescription ' (DS).png']))
+% saveas(f1, fullfile(folder, [SeriesDescription '.png']))
+% saveas(f2, fullfile(folder, [SeriesDescription ' (DS).png']))
 
 
 
@@ -142,7 +142,7 @@ for sindx = 2:length(SeriesDescriptions)
     cb.Label.String = 'Signal (a.u.)';
     title([Sequence ' (Original)'])
 
-    saveas(f1, fullfile(folder, [SeriesDescription ' (DS).png']))
-    saveas(f2, fullfile(folder, [SeriesDescription '.png']))
+    % saveas(f1, fullfile(folder, [SeriesDescription ' (DS).png']))
+    % saveas(f2, fullfile(folder, [SeriesDescription '.png']))
 
 end

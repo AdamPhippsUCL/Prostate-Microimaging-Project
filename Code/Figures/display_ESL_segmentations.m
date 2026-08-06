@@ -4,7 +4,7 @@ clear;
 projectfolder = pwd;
 
 % Sample
-samplename = '20250523_UQ8';
+samplename = '20250224_UQ4';
 %'20250224_UQ4'
 %'20250407_UQ5'
 %'20250414_UQ6'
@@ -39,7 +39,7 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 % Good for figure: 9N, 9B, 8M
 
 % SAMPLE NUMBER
-snum = 'UQ8M';
+snum = 'UQ4N';
 
 sl=120;
 switch snum
@@ -89,14 +89,20 @@ end
 
 
 f1=figure;
+tiledlayout(1,1, "TileSpacing","tight")
+nexttile;
 imshow(squeeze(MGE(sl,xs,ys)),[0 prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
 
 
 f2=figure;
+tiledlayout(1,1, "TileSpacing","tight")
+nexttile;
 imshow(squeeze(dwFA(sl,xs,ys)),[0 5e-4]);
 
 
 f3=figure;
+tiledlayout(1,1, "TileSpacing","tight")
+nexttile;
 imshow(squeeze(MGE(sl,xs,ys)),[0 prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
 hold on
 mask = imshow(squeeze(displaymasks(sl,xs,ys,:)));

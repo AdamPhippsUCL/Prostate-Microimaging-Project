@@ -6,7 +6,7 @@ projectfolder=pwd;
 
 %% Sample
 
-samplename = '20250224_UQ4';
+samplename = '20250524_UQ9';
 %'20250224_UQ4'
 % '20250407_UQ5'
 %'20250414_UQ6'
@@ -49,7 +49,7 @@ clear EPITHELIUM STROMA LUMEN
 
 %% Load modelling results
 
-sample_num = '4N';
+sample_num = '9B';
 
 folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
@@ -132,10 +132,10 @@ axv = 0.6;
 axh = 0.5*(h/v1)*axv;
 
 
+slices=7;
 
 %% MGE + segmentations all in one figure
 
-slices=6:9;
 
 f=figure;
 fpos = f.Position;
@@ -150,7 +150,7 @@ for sl=slices
     nexttile;
     imshow(squeeze(MGE(16*(sl+0.5),MGE_disp_v1,MGE_disp_h))*1e8,[])
     % axis image
-    title([sample_num ' slice ' num2str(sl)])
+    % title([sample_num ' slice ' num2str(sl)])
     % cb=colorbar;
     % cb.Label.String='MGE signal (A.U.)';  
 
@@ -186,9 +186,6 @@ ADC_Measured(SampleMask==1) = measured_ADC;
 ADC_Predicted = NaN*ones(size(SampleMask));
 ADC_Predicted(SampleMask==1) = pred_ADC;
 
-slices=6:9;
-
-
 
 %% ADC map
 
@@ -209,14 +206,16 @@ for sl=slices
     crameri('-bilbao')
     cb=colorbar;
     cb.Label.String='ADC x1e-3 mm^2/s';
-    title([sample_num ' slice ' num2str(sl)])
+    % title([sample_num ' slice ' num2str(sl)])
 
     set(gca, 'Color', [0 0 0])    % Black background
     im = findobj(gca,'Type','image');
     im.AlphaData = ~isnan(this_cs);
     axis on
     set(gca, 'XTick', [], 'YTick', [])
-
+    
+    ax=gca();
+    ax.FontSize=14;
 
 
 end
@@ -253,8 +252,10 @@ for sl=slices
     set(gca, 'XTick', [], 'YTick', [])
     crameri('-vik', 'pivot', 0)
 
-    title([sample_num ' slice ' num2str(sl)])
-
+    % title([sample_num ' slice ' num2str(sl)])
+    
+    ax=gca();
+    ax.FontSize=14;
 
 end
 
@@ -276,7 +277,6 @@ fs_Measured(SampleMask==1) = measured_fs;
 fs_Predicted = NaN*ones(size(SampleMask));
 fs_Predicted(SampleMask==1) = pred_fs;
 
-slices=6:9;
 
 
 %% fs map
@@ -298,14 +298,16 @@ for sl=slices
     crameri('-bilbao')
     cb=colorbar;
     cb.Label.String='Sphere Fraction';
-    title([sample_num ' slice ' num2str(sl)])
+    % title([sample_num ' slice ' num2str(sl)])
 
     set(gca, 'Color', [0 0 0])    % Black background
     im = findobj(gca,'Type','image');
     im.AlphaData = ~isnan(this_cs);
     axis on
     set(gca, 'XTick', [], 'YTick', [])
-
+    
+    ax=gca();
+    ax.FontSize=14;
 
 end
 
@@ -342,9 +344,11 @@ for sl=slices
     set(gca, 'XTick', [], 'YTick', [])
     crameri('vik', 'pivot', fs_mean_bias)
 
-    title([sample_num ' slice ' num2str(sl)])
+    % title([sample_num ' slice ' num2str(sl)])
 
-
+    
+    ax=gca();
+    ax.FontSize=14;
 end
 
 exportgraphics(f, ...
@@ -367,7 +371,6 @@ Db_Measured(SampleMask==1) = measured_Db;
 Db_Predicted = NaN*ones(size(SampleMask));
 Db_Predicted(SampleMask==1) = pred_Db;
 
-slices=6:9;
 
 
 
@@ -390,7 +393,7 @@ for sl=slices
     crameri('-bilbao')
     cb=colorbar;
     cb.Label.String='D_{ball} x1e-3 mm^2/s';
-    title([sample_num ' slice ' num2str(sl)])
+    % title([sample_num ' slice ' num2str(sl)])
 
     set(gca, 'Color', [0 0 0])    % Black background
     im = findobj(gca,'Type','image');
@@ -398,7 +401,9 @@ for sl=slices
     axis on
     set(gca, 'XTick', [], 'YTick', [])
 
-
+    
+    ax=gca();
+    ax.FontSize=14;
 
 end
 
@@ -435,9 +440,10 @@ for sl=slices
     set(gca, 'XTick', [], 'YTick', [])
     crameri('-vik', 'pivot', 0)
 
-    title([sample_num ' slice ' num2str(sl)])
-
-
+    % title([sample_num ' slice ' num2str(sl)])
+    
+    ax=gca();
+    ax.FontSize=14;
 end
 
 exportgraphics(f, ...

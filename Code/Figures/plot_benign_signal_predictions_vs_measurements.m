@@ -18,7 +18,7 @@ SampleNames = {...
 Cancer = {'4B', '4M', '6N'};
 
 % Image
-seriesindx = 4;
+seriesindx = 11;
 SeriesDescriptions = {
     'SE_b0_SPOIL5% (DS)',...
     'STEAM_ShortDELTA_15 (DS)',...
@@ -61,10 +61,10 @@ for samplename = SampleNames
 
 end
 
-% % R2 value
-% RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
-% R2 = RESULTS(seriesindx).R2;
-% clear RESULTS
+% R2 value
+RESULTS = load(fullfile(projectfolder, 'Outputs', 'ESL signal estimation', 'Multi-sample', 'RESULTS.mat')).RESULTS;
+R2 = RESULTS(seriesindx).R2;
+clear RESULTS
 
 % 
 % % For samples in group only
@@ -87,9 +87,12 @@ diff = (Measure-Pred);
 % Bias
 bias = mean(diff);
 
-% 95% residual limits
-upperRL = mean(diff)+1.96*std(diff);
-lowerRL = mean(diff)-1.96*std(diff);
+% sigma
+sigma = std(diff);
+
+% % 95% residual limits
+% upperRL = mean(diff)+1.96*std(diff);
+% lowerRL = mean(diff)-1.96*std(diff);
 
 % % Save residual limits
 % RL = [bias, lowerRL, upperRL];
@@ -98,17 +101,25 @@ lowerRL = mean(diff)-1.96*std(diff);
 % save(fullfile(RLfolder, 'BenignRL.mat'), 'RL');
 
 f=figure;
-scatter(Pred, diff ,  6, 'filled', 'MarkerFaceAlpha', 0.7, CData=COMP, HandleVisibility='off');
+scatter(Pred, diff ,  6, 'filled', 'MarkerFaceAlpha', 0.5, CData=COMP, HandleVisibility='off');
 hold on
-% yline(bias, '-', DisplayName='Bias', LineWidth=1.2)
-yline(0, '-', HandleVisibility = 'off', LineWidth=1.2)
-yline(lowerRL, '--', DisplayName='95% Limits',  color = [.1 .1 .1], LineWidth=1.2)
-yline(upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+yline(bias, '-', DisplayName='\mu', LineWidth=1.2)
+yline(bias+sigma, '--', DisplayName='\mu \pm \sigma', LineWidth=1.2)
+yline(bias-sigma, '--', HandleVisibility='off', LineWidth=1.2)
+yline(bias+2*sigma, '-.', DisplayName='\mu \pm 2\sigma', LineWidth=1.2)
+yline(bias-2*sigma, '-.', HandleVisibility='off', LineWidth=1.2)
+
+% yline(0, '-', HandleVisibility = 'off', LineWidth=1.2)
+% yline(lowerRL, '--', DisplayName='95% Limits',  color = [.1 .1 .1], LineWidth=1.2)
+% yline(upperRL, '--', HandleVisibility="off",  color = [.1 .1 .1], LineWidth=1.2)
+
+
 legend(Location="northwest")
 grid on
-ylim([-0.28, 0.28])
+ylim([-0.38, 0.38])
 yticks(-0.4:0.1:0.4)
-xlim([-0.02, 0.62])
+xlim([-0.02, 0.64])
 xticks([0:0.1:0.6])
 xlabel('Predicted Signal')
 ylabel('Measured Signal - Predicted Signal')
@@ -117,14 +128,14 @@ ax = gca();
 ax.FontSize = 12;
 f.Position = [488   242   660   400];
 
-% text(0.685, 0.95, ['R^2 = ' sprintf( '%0.3f', R2(1)) ' (' sprintf('%0.3f', R2(2)) ', ' sprintf('%0.3f', R2(3)) ')'], ...
-%     'Units', 'normalized', ...
-%     'VerticalAlignment', 'top', ...
-%     'HorizontalAlignment', 'left', ...
-%     'BackgroundColor', 'white', ...
-%     'EdgeColor', 'black');  % Optional border
+text(0.685, 0.95, ['R^2 = ' sprintf( '%0.3f', R2(1)) ' (' sprintf('%0.3f', R2(2)) ', ' sprintf('%0.3f', R2(3)) ')'], ...
+    'Units', 'normalized', ...
+    'VerticalAlignment', 'top', ...
+    'HorizontalAlignment', 'left', ...
+    'BackgroundColor', 'white', ...
+    'EdgeColor', 'black');  % Optional border
 
-% saveas(f, fullfile(projectfolder, 'Figures', ['Signal Residuals b' num2str(bval) '_Delta' num2str(DELTA) '.png']))
+saveas(f, fullfile(projectfolder, 'Thesis Figures', 'Benign Signal Residuals', ['b' num2str(bval) '_Delta' num2str(DELTA) '.png']))
 
 
 

@@ -91,5 +91,5 @@ for indx = 1:N
 end
 
 % Save as excel sheet
-writetable(T, fullfile(projectfolder, 'Thesis Figures', 'modelling_results.xlsx'));
+writetable(T, fullfile(projectfolder, 'Outputs', 'Model Fitting', 'ESL signal profiles', 'Multi-sample', 'modelling_results.xlsx'));
 

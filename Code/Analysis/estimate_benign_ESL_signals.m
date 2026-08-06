@@ -214,8 +214,8 @@ for imgindx = 1:Nimg
     end
 
     signals(:,imgindx,2) = std(BootFits); % Standard error
-    signals(:,imgindx,3) = prctile(BootFits,0.5); % 0.5th percentile
-    signals(:,imgindx,4) = prctile(BootFits,99.5); % 99.5th percentile
+    signals(:,imgindx,3) = prctile(BootFits,2.5); % 2.5th percentile
+    signals(:,imgindx,4) = prctile(BootFits,97.5); % 97.5th percentile
 
     % RESULTS
     RESULTS(imgindx).E = [signals(1, imgindx, 1), signals(1, imgindx, 3), signals(1, imgindx, 4)];
