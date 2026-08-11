@@ -4,7 +4,7 @@ clear;
 projectfolder = pwd;
 
 % Sample
-samplename = '20250224_UQ4';
+samplename = '20250524_UQ9';
 %'20250224_UQ4'
 %'20250407_UQ5'
 %'20250414_UQ6'
@@ -39,7 +39,7 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 % Good for figure: 9N, 9B, 8M
 
 % SAMPLE NUMBER
-snum = 'UQ4N';
+snum = 'UQ9N';
 
 sl=120;
 switch snum
@@ -73,15 +73,18 @@ switch snum
     case 'UQ8M'
         xs = 30:210;
         ys = 195:435;
+        rotdirec=-1;
     case 'UQ8N'
         xs = 30:210;
         ys = 440:620;
     case 'UQ9B'
         xs = 30:210;
         ys = 80:320;
+        rotdirec=1;
     case 'UQ9N'
         xs = 30:210;
         ys = 325:565;
+        rotdirec=1;
 end
 
 
@@ -91,21 +94,29 @@ end
 f1=figure;
 tiledlayout(1,1, "TileSpacing","tight")
 nexttile;
-imshow(squeeze(MGE(sl,xs,ys)),[0 prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
-
+img=rot90(squeeze(MGE(sl,xs,ys)), rotdirec)*1e8;
+imshow(img,[0 1e8*prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
+cb=colorbar;
+cb.Label.String = 'MGE signal (A.U.)';
+cb.Ticks = 2:2:20;
 
 f2=figure;
 tiledlayout(1,1, "TileSpacing","tight")
 nexttile;
-imshow(squeeze(dwFA(sl,xs,ys)),[0 5e-4]);
-
+img = 1e3*rot90(squeeze(dwFA(sl,xs,ys)), rotdirec);
+imshow(img,[0, 0.55]);%1e4*[0 5.5e-4]);
+cb=colorbar;
+cb.Label.String='MD \times FA (\mum^2/ms)';
+cb.Ticks = 0.1:0.1:1;
 
 f3=figure;
 tiledlayout(1,1, "TileSpacing","tight")
 nexttile;
-imshow(squeeze(MGE(sl,xs,ys)),[0 prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
+img = rot90(squeeze(MGE(sl,xs,ys)), rotdirec);
+imshow(img,[0 prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
 hold on
-mask = imshow(squeeze(displaymasks(sl,xs,ys,:)));
+dispmask = rot90(squeeze(displaymasks(sl,xs,ys,:)), rotdirec);
+mask = imshow(dispmask);
 set(mask, 'AlphaData', 0.2)
 
 
@@ -113,6 +124,19 @@ set(mask, 'AlphaData', 0.2)
 
 folder = fullfile(projectfolder, 'Thesis Figures', 'Benign Segmentations', snum);
 mkdir(folder);
-saveas(f1, fullfile(folder, 'MGE.png'));
-saveas(f2, fullfile(folder, 'dwFA.png'));
-saveas(f3, fullfile(folder, 'segmentation.png'));
+
+exportgraphics(f1, ...
+    fullfile(folder, 'MGE.png'), ...
+   'BackgroundColor','none','Resolution',300)
+
+exportgraphics(f2, ...
+    fullfile(folder, 'dwFA.png'), ...
+   'BackgroundColor','none','Resolution',300)
+
+exportgraphics(f3, ...
+    fullfile(folder, 'segmentation.png'), ...
+   'BackgroundColor','none','Resolution',300)
+
+% saveas(f1, fullfile(folder, 'MGE.png'));
+% saveas(f2, fullfile(folder, 'dwFA.png'));
+% saveas(f3, fullfile(folder, 'segmentation.png'));

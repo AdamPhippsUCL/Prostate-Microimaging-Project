@@ -121,10 +121,10 @@ fs_sigma_highE = std(fs_diff(highE_bool));
 % Save bias and sigma
 RLfolder = fullfile(projectfolder, 'Outputs', 'Model Fitting', 'Benign RL', 'Ball+Sphere');
 mkdir(RLfolder)
-save(fullfile(RLfolder, 'fs_mean_bias.mat'), 'fs_bias');
-save(fullfile(RLfolder, 'fs_sigma.mat'), 'fs_sigma');
-save(fullfile(RLfolder, 'fs_mean_bias_highE.mat'), 'fs_bias_highE');
-save(fullfile(RLfolder, 'fs_sigma_highE.mat'), 'fs_sigma_highE');
+% save(fullfile(RLfolder, 'fs_mean_bias.mat'), 'fs_bias');
+% save(fullfile(RLfolder, 'fs_sigma.mat'), 'fs_sigma');
+% save(fullfile(RLfolder, 'fs_mean_bias_highE.mat'), 'fs_bias_highE');
+% save(fullfile(RLfolder, 'fs_sigma_highE.mat'), 'fs_sigma_highE');
 
 
 % FIGURE FOR ALL VOXELS
@@ -158,7 +158,7 @@ title('All voxels')
 
 f1.Position = [680   400   600   380];
 
-saveas(f1, fullfile(projectfolder, 'Thesis Figures', 'Benign Residuals Plots', ['Benign Residuals Sphere Fraction.png']))
+% saveas(f1, fullfile(projectfolder, 'Thesis Figures', 'Benign Residuals Plots', ['Benign Residuals Sphere Fraction.png']))
 
 
 % FIGURE High E voxels
@@ -182,8 +182,8 @@ legend(Location="northwest")
 grid on
 ylim([-0.3, 0.3])
 yticks(-0.2:0.1:0.2)
-% xlim([-0.05, 0.35])
-xticks([0:0.01:0.4])
+xlim([-0.05, 0.35])
+% xticks([0:0.01:0.4])
 xlabel('Predicted Sphere Fraction')
 ylabel('Measured - Predicted Sphere Fraction')
 
@@ -495,8 +495,8 @@ ylim([-0.88, 1.22])
 yticks(-1:0.2:1)
 xlim([0.36, 2.1])
 xticks([0.4:0.2:2])
-xlabel('Predicted ADC (µm^2/ms)')
-ylabel('Measured - Predicted ADC (µm^2/ms)')
+xlabel('Predicted D (µm^2/ms)')
+ylabel('Measured - Predicted D (µm^2/ms)')
 
 ax1.FontSize = 12;
 
@@ -531,8 +531,8 @@ ylim([-0.62, 0.82])
 yticks(-1:0.2:1)
 % xlim([0.36, 2.1])
 xticks([0.3:0.05:2])
-xlabel('Predicted ADC (µm^2/ms)')
-ylabel('Measured - Predicted ADC (µm^2/ms)')
+xlabel('Predicted D (µm^2/ms)')
+ylabel('Measured - Predicted D (µm^2/ms)')
 
 ax1.FontSize = 12;
 

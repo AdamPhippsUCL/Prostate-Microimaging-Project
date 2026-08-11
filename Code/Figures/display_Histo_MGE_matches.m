@@ -3,7 +3,7 @@
 clear;
 projectfolder = pwd;
 
-samplename = '20250522_UQ7';
+samplename = '20250523_UQ8';
 
 %'20250224_UQ4'
 %'20250407_UQ5'
@@ -31,12 +31,15 @@ sv1.DisplayRange = [0 2e-7];
 %% High-res diffusion
 
 % % Load FA maps
-% FA = load(fullfile(projectfolder,'Outputs', 'Model Fitting', samplename, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'dwFA.mat')).dwFA;
+FA = load(fullfile(projectfolder,'Outputs', 'Model Fitting', samplename, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'dwFA.mat')).dwFA;
 % D = load(fullfile(projectfolder,'Outputs', 'Model Fitting', samplename, 'DTI', '40u_DtiSE_2012_SPOIL10% (20 micron)', 'D.mat')).D;
 % 
-% figure;
-% sv2 = sliceViewer(FA); 
-% sv2.DisplayRange = [0 0.8]; 
+
+FA(isnan(FA))=0;
+FA(isinf(FA))=0;
+figure;
+sv2 = sliceViewer(FA); 
+sv2.DisplayRange = [0 2*1e-4]; 
 % 
 % figure;
 % sv2 = sliceViewer(D); 
@@ -62,7 +65,7 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 
 %% Save slice
 
-sl=546;
+sl=307;
 MGE_slice = MGE(:,:,sl);
 
 f=figure;
@@ -138,6 +141,18 @@ set(mask, 'AlphaData', 0.2)
 % MGE slice 54 with UQ4B 6
 
 % MGE slice 124 with UQ4B 4
+
+
+% === UQ4M
+
+% MGE slice 282 Histo slice 5
+
+% MGE slice 308 Histo slice 6
+
+% MGE slice 353 Histo slice 8 (semi-match, histo clearly not in MGE plane)
+
+% MGE slice 372 Histo 9
+
 
 
 % === UQ6N

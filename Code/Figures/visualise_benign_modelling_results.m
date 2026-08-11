@@ -49,7 +49,7 @@ clear EPITHELIUM STROMA LUMEN
 
 %% Load modelling results
 
-sample_num = '9B';
+sample_num = '9N';
 
 folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;
@@ -132,9 +132,9 @@ axv = 0.6;
 axh = 0.5*(h/v1)*axv;
 
 
-slices=7;
+slices=8;
 
-%% MGE + segmentations all in one figure
+%% MGE + segmentations 
 
 
 f=figure;
@@ -148,7 +148,43 @@ tiledlayout(numel(slices),1, 'TileSpacing','compact');
 for sl=slices
 
     nexttile;
-    imshow(squeeze(MGE(16*(sl+0.5),MGE_disp_v1,MGE_disp_h))*1e8,[])
+    imshow(squeeze(MGE(16*(sl-0.5),MGE_disp_v1,MGE_disp_h))*1e8,[])
+    axis image
+    % title([sample_num ' slice ' num2str(sl)])
+    cb=colorbar;
+    cb.Label.String='MGE signal (A.U.)';  
+
+
+    % hold on
+    % mask = imshow(squeeze(displaymasks(16*(sl-0.5),MGE_disp_v1,MGE_disp_h,:)));
+    % set(mask, 'AlphaData', 0.2)
+
+    % set(gca, 'Color', [0 0 0])    % Black background
+    % im = findobj(gca,'Type','image');
+    % im(1).AlphaData = 1;
+    axis on
+    set(gca, 'XTick', [], 'YTick', [], 'FontSize', 14)
+end
+
+
+
+exportgraphics(f, ...
+    fullfile(projectfolder, 'Thesis Figures', 'Benign Parameter Maps', [sample_num '_MGE.png']) ...
+    ,'BackgroundColor','none','Resolution',300)
+
+
+f=figure;
+fpos = f.Position;
+fpos(3)=(axh/axv)*fpos(3);
+fpos(4)=numel(slices)*fpos(4);
+fpos(2)=0;
+f.Position = fpos;
+tiledlayout(numel(slices),1, 'TileSpacing','compact');
+
+for sl=slices
+
+    nexttile;
+    imshow(squeeze(MGE(16*(sl-0.5),MGE_disp_v1,MGE_disp_h))*1e8,[])
     % axis image
     % title([sample_num ' slice ' num2str(sl)])
     % cb=colorbar;
@@ -156,7 +192,7 @@ for sl=slices
 
 
     hold on
-    mask = imshow(squeeze(displaymasks(16*(sl+0.5),MGE_disp_v1,MGE_disp_h,:)));
+    mask = imshow(squeeze(displaymasks(16*(sl-0.5),MGE_disp_v1,MGE_disp_h,:)));
     set(mask, 'AlphaData', 0.2)
 
     % set(gca, 'Color', [0 0 0])    % Black background
@@ -169,8 +205,6 @@ end
 exportgraphics(f, ...
     fullfile(projectfolder, 'Thesis Figures', 'Benign Parameter Maps', [sample_num '_MGE_Segmentation.png']) ...
     ,'BackgroundColor','none','Resolution',300)
-
-
 
 
 
@@ -200,12 +234,14 @@ tiledlayout(numel(slices),1, 'TileSpacing','compact');
 for sl=slices
 
     this_cs = squeeze(ADC_Measured(sl,disp_v1,disp_h));
+    % this_cs = squeeze(ADC_Predicted(sl,disp_v1,disp_h));
     nexttile;
-    imshow(this_cs,[0.15 1.05])
+    imshow(this_cs,[0.15 1.85])
     daspect([2,1,1])
     crameri('-bilbao')
     cb=colorbar;
-    cb.Label.String='ADC x1e-3 mm^2/s';
+    cb.Ticks = -0.2:0.4:1.8;
+    cb.Label.String='D \mum^2/ms';
     % title([sample_num ' slice ' num2str(sl)])
 
     set(gca, 'Color', [0 0 0])    % Black background
@@ -243,7 +279,8 @@ for sl=slices
     imshow(this_cs,[ADC_mean_bias-3*ADC_sigma ADC_mean_bias+3*ADC_sigma])
     daspect([2,1,1])
     cb=colorbar;
-    cb.Label.String='ADC difference x1e-3 mm^2/s';
+    cb.Label.String='D difference \mum^2/ms';
+    cb.Ticks = -0.6:0.2:0.6;
 
     set(gca, 'Color', [0 0 0])    % Black background
     im = findobj(gca,'Type','image');
@@ -292,12 +329,14 @@ tiledlayout(numel(slices),1, 'TileSpacing','compact');
 for sl=slices
 
     this_cs = squeeze(fs_Measured(sl,disp_v1,disp_h));
+    % this_cs = squeeze(fs_Predicted(sl,disp_v1,disp_h));
     nexttile;
     imshow(this_cs,[-0.02 0.42])
     daspect([2,1,1])
     crameri('-bilbao')
     cb=colorbar;
     cb.Label.String='Sphere Fraction';
+    cb.Ticks=0:0.1:0.4;
     % title([sample_num ' slice ' num2str(sl)])
 
     set(gca, 'Color', [0 0 0])    % Black background
@@ -388,11 +427,12 @@ for sl=slices
 
     this_cs = squeeze(Db_Measured(sl,disp_v1,disp_h));
     nexttile;
-    imshow(this_cs,[0.52 1.48])
+    imshow(this_cs,[0.35 1.65])
     daspect([2,1,1])
     crameri('-bilbao')
     cb=colorbar;
-    cb.Label.String='D_{ball} x1e-3 mm^2/s';
+    cb.Label.String='D_{ball} \mum^2/ms';
+    cb.Ticks = 0.4:0.2:1.8;
     % title([sample_num ' slice ' num2str(sl)])
 
     set(gca, 'Color', [0 0 0])    % Black background
@@ -430,7 +470,7 @@ for sl=slices
     imshow(this_cs,[Db_mean_bias-3*Db_sigma Db_mean_bias+3*Db_sigma])
     daspect([2,1,1])
     cb=colorbar;
-    cb.Label.String='D_{ball} difference x1e-3 mm^2/s';
+    cb.Label.String='D_{ball} difference \mum^2/ms';
     cb.Ticks = [-0.4:0.2:0.4];
 
     set(gca, 'Color', [0 0 0])    % Black background

@@ -7,7 +7,7 @@ projectfolder = pwd;
 
 RESULTS = struct();
 
-SaveRESULTS = true;
+SaveRESULTS = false;
 
 %% Sample and scheme details
 
@@ -26,8 +26,8 @@ components = {'E', 'S'};
 
 modelnames = {
   'ADC',...
-  'DKI',...
-  'Sphere',...
+  ...'DKI',...
+  ...'Sphere',...
   'Ball+Sphere'...
     };
 
@@ -35,7 +35,7 @@ modelnames = {
 lambda = 0e-3; % Regularisation
 fittingtechnique = 'LSQ';
 
-DisplayPredictions = false;
+DisplayPredictions = true;
 
 DisplayLikelihoodProfiles = false;
 
@@ -233,6 +233,7 @@ for compindx = 1:length(components)
                     marker = 'o';
                     markersize = 20;
                     thisbshift = 1*bshift;
+                    dispname='Monoexponential';
                 case 'DKI'
                     ...
                 case 'Sphere'
@@ -242,6 +243,7 @@ for compindx = 1:length(components)
                     marker = 'x';
                     markersize = 50;
                     thisbshift = 1*bshift;
+                    dispname='Ball+Sphere';
             end
 
             scatter( ...
@@ -250,7 +252,7 @@ for compindx = 1:length(components)
                 (pred(2:end)), markersize,marker, ...
                 MarkerEdgeColor=markercolor, ...
                 LineWidth=1.5, ...
-                DisplayName = [ modelname])
+                DisplayName = [ dispname])
             % title(T)
             legend
             xticks([1000, 1250, 1500, 1750, 2000])

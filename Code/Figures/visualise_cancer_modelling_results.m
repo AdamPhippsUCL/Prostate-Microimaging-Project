@@ -6,7 +6,7 @@ projectfolder=pwd;
 
 %% Load modelling results
 
-samplename = '20260128_UQ10';
+samplename = '20260315_UQ11';
 %'20250224_UQ4'
 %'20250414_UQ6'
 % '20260128_UQ10'
@@ -19,6 +19,25 @@ ImageFolder = fullfile(pwd, 'Imaging Data', 'MAT DN', samplename);
 MGE = load(fullfile(ImageFolder, '3DMGE_20u', 'avgImageArray.mat')).avgImageArray;
 
 
+
+% % Mask folder
+% maskfolder = fullfile(projectfolder, 'Outputs', 'Masks', samplename, '3DMGE_20u');
+% 
+% % LOAD ESL MASKs
+% EPITHELIUM = load(fullfile(maskfolder, 'EPITHELIUM.mat')).EPITHELIUM;
+% STROMA = load(fullfile(maskfolder, 'STROMA.mat')).STROMA;
+% LUMEN = load(fullfile(maskfolder, 'LUMEN.mat')).LUMEN;
+% 
+% % Create 4D mask (color coded)
+% displaymasks = zeros([size(EPITHELIUM), 3]);
+% displaymasks(:,:,:,1) = logical(EPITHELIUM);
+% displaymasks(:,:,:,2) = logical(STROMA);
+% displaymasks(:,:,:,3) = logical(LUMEN);
+% 
+% clear EPITHELIUM STROMA LUMEN
+
+
+
 %% Load modelling results
 
 % ====== ESL modelling
@@ -29,7 +48,7 @@ E_fs = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Co
 E_Db = RESULTS(and(strcmp({RESULTS.ModelName},'Ball+Sphere'), strcmp({RESULTS.Component},'E'))).ModelParams(4);
 
 
-sample_num = '10N';
+sample_num = '11B';
 
 folder =  fullfile(projectfolder, 'Outputs', 'Signals', samplename);
 SampleNums = load(fullfile(folder, "SampleNums.mat")).SampleNums;  
@@ -89,7 +108,6 @@ pred_ADC = pred_ADC(Bools);
 MaskFolder = fullfile(pwd, 'Outputs', 'Masks', samplename, 'SE_b0_SPOIL5% (DS)');
 SampleMask = load(fullfile(MaskFolder, [sample_num(end) 'MASK'])).([sample_num(end) 'MASK']);
 
-
 disp_inds_h = find(sum(SampleMask , 1:2)>0);
 disp_h = [min(disp_inds_h)-1:max(disp_inds_h)+1];
 h = length(disp_h);
@@ -113,33 +131,32 @@ axv = 0.6;
 axh = 0.5*(h/v1)*axv;
 
 
-slices = 6:9;
+% Sagittal slices to show
+slices = 8;
 
 
-%% MGE individual figures
 
-for sl=slices
+%% MGE axial slice
 
-    f=figure;
-    fpos = f.Position;
-    fpos(3)=(axh/axv)*fpos(3);
-    f.Position = fpos;
-    tiledlayout(1,1);
-    nexttile;
-    imshow(squeeze(MGE(16*(sl+0.5),MGE_disp_v1,MGE_disp_h)),[])
-    title([sample_num ' slice ' num2str(sl)])
-    cb=colorbar;
-    cb.Label.String='MGE signal (A.U.)';   
+MGE_axial_slice = 195;
 
-    % exportgraphics(f, ...
-    %     fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_MGE_sl' num2str(sl) '.png']) ...
-    %     ,'BackgroundColor','none','Resolution',300)
+f=figure;
+f.Position = [488   242   500   500];
+ax=axes;
+ax.Position = [0.1,0.1,0.8,0.8];
 
+imshow(MGE(MGE_disp_v2, MGE_disp_v1, MGE_axial_slice)*1e8, [])
 
-end
+cb=colorbar;
+cb.Label.String='MGE signal (A.U.)';   
 
+ax.FontSize=14;
 
-%% MGE all in one figure
+exportgraphics(f, ...
+    fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_MGE_ax_' num2str(MGE_axial_slice) '.png']), ...
+    'BackgroundColor','none','Resolution',300)
+
+%% MGE sagittal slices
 
 f=figure;
 fpos = f.Position;
@@ -152,7 +169,7 @@ tiledlayout(numel(slices),1, 'TileSpacing','compact');
 for sl=slices
 
     nexttile;
-    imshow(squeeze(MGE(16*(sl+0.5),MGE_disp_v1,MGE_disp_h))*1e8,[])
+    imshow(squeeze(MGE(16*(sl-0.5),MGE_disp_v1,MGE_disp_h))*1e8,[])
     % axis image
     title([sample_num ' slice ' num2str(sl)])
     cb=colorbar;
@@ -177,49 +194,50 @@ end
 ADC_mean_bias_highE = load(fullfile(output_folder, 'Benign RL', 'ADC', 'ADC_mean_bias_highE.mat')).ADC_bias_highE;
 ADC_sigma_highE=load(fullfile(output_folder, 'Benign RL', 'ADC', 'ADC_sigma_highE.mat')).ADC_sigma_highE;
 
-pivot=E_ADC+ADC_mean_bias_highE;
-sigma=ADC_sigma_highE;
+ADC_pivot=E_ADC+ADC_mean_bias_highE;
+ADC_sigma=ADC_sigma_highE;
 
 ADC_Measured = NaN*ones(size(SampleMask));
 ADC_Measured(SampleMask==1) = measured_ADC;
 
-
-%% ADC Individual figures
-
-
-for sl=slices
-    this_cs = squeeze(ADC_Measured(sl,disp_v1,disp_h));
-    
-    f=figure;
-    fpos = f.Position;
-    fpos(3)=(axh/axv)*fpos(3);
-    f.Position = fpos;
-    tiledlayout(1,1);
-    nexttile;
-    % imshow(this_cs,[0 lim_max])
-    imshow(this_cs,[pivot-3*sigma pivot+3*sigma])
-    daspect([2,1,1])
-    cb=colorbar;
-    cb.Label.String='ADC x1e-3 mm^2/s';
-    
-    set(gca, 'Color', [0 0 0])    % Black background
-    im = findobj(gca,'Type','image');
-    im.AlphaData = ~isnan(this_cs);
-    axis on
-    set(gca, 'XTick', [], 'YTick', [])
-    crameri('-vik', 'pivot', pivot)
-    
-    title([sample_num ' slice ' num2str(sl)])
-
-    % exportgraphics(f, ...
-    %     fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_ADC_sl' num2str(sl) '.png']) ...
-    %     ,'BackgroundColor','none','Resolution',300)
-
-end
+ADC_Predicted = NaN*ones(size(SampleMask));
+ADC_Predicted(SampleMask==1) = pred_ADC;
 
 
+%% ADC Axial slice
 
-%% ADC All in one figure
+% Find  slice
+dMRI_axial_slice = ceil(MGE_axial_slice/8);
+
+this_map = ADC_Measured(disp_v2, disp_v1, dMRI_axial_slice);
+
+
+f=figure;
+f.Position = [488   242   500   500];
+ax=axes;
+ax.Position = [0.1,0.1,0.8,0.8];
+
+imshow(this_map, [ADC_pivot-3*ADC_sigma ADC_pivot+3*ADC_sigma])
+
+cb=colorbar;
+cb.Label.String='D \mum^2/ms';
+
+set(gca, 'Color', [0 0 0])    % Black background
+im = findobj(gca,'Type','image');
+im.AlphaData = ~isnan(this_map);
+axis on
+set(gca, 'XTick', [], 'YTick', [])
+crameri('-vik', 'pivot', ADC_pivot)
+
+ax.FontSize=14;
+
+exportgraphics(f, ...
+     fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_ADC_ax_' num2str(dMRI_axial_slice) '.png']), ...
+    'BackgroundColor','none','Resolution',300)
+
+
+
+%% ADC Sagittal slices
 
 f=figure;
 fpos = f.Position;
@@ -263,48 +281,44 @@ end
 fs_mean_bias_highE = load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'fs_mean_bias_highE.mat')).fs_bias_highE;
 fs_sigma_highE=load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'fs_sigma_highE.mat')).fs_sigma_highE;
 
-pivot=E_fs+fs_mean_bias_highE;
-sigma=fs_sigma_highE;
+fs_pivot=E_fs+fs_mean_bias_highE;
+fs_sigma=fs_sigma_highE;
 
 fs_Measured = NaN*ones(size(SampleMask));
 fs_Measured(SampleMask==1) = measured_fs;
 
 
-%% Individual figures
+%% fs Axial slice
+
+% Find  slice
+dMRI_axial_slice = ceil(MGE_axial_slice/8);
+
+this_map = fs_Measured(disp_v2, disp_v1, dMRI_axial_slice);
 
 
-for sl=slices
+f=figure;
+f.Position = [488   242   500   500];
+ax=axes;
+ax.Position = [0.1,0.1,0.8,0.8];
 
-    this_cs = squeeze(fs_Measured(sl,disp_v1,disp_h));
-    
-    f=figure;
-    fpos = f.Position;
-    fpos(3)=(axh/axv)*fpos(3);
-    f.Position = fpos;
-    tiledlayout(1,1);
-    nexttile;
-    % imshow(this_cs,[0 lim_max])
-    imshow(this_cs,[pivot-3*sigma pivot+3*sigma])
-    daspect([2,1,1])
-    cb=colorbar;
-    cb.Label.String='Sphere Fraction';
-    
-    set(gca, 'Color', [0 0 0])    % Black background
-    im = findobj(gca,'Type','image');
-    im.AlphaData = ~isnan(this_cs);
-    axis on
-    set(gca, 'XTick', [], 'YTick', [])
-    crameri('vik', 'pivot', pivot)
-    
-    title([sample_num ' slice ' num2str(sl)])
+imshow(this_map, [fs_pivot-3*fs_sigma fs_pivot+3*fs_sigma])
 
+cb=colorbar;
+cb.Label.String='Sphere Fraction';
+cb.Ticks = 0.2:0.1:0.5;
 
-    % exportgraphics(f, ...
-    %     fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_fs_sl' num2str(sl) '.png']) ...
-    %     ,'BackgroundColor','none','Resolution',300)
+set(gca, 'Color', [0 0 0])    % Black background
+im = findobj(gca,'Type','image');
+im.AlphaData = ~isnan(this_map);
+axis on
+set(gca, 'XTick', [], 'YTick', [])
+crameri('vik', 'pivot', fs_pivot)
 
-end
+ax.FontSize=14;
 
+exportgraphics(f, ...
+     fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_fs_ax_' num2str(dMRI_axial_slice) '.png']), ...
+    'BackgroundColor','none','Resolution',300)
 
 %% fs All in one figure
 
@@ -350,46 +364,44 @@ exportgraphics(f, ...
 Db_mean_bias_highE = load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'Db_mean_bias_highE.mat')).Db_bias_highE;
 Db_sigma_highE=load(fullfile(output_folder, 'Benign RL', 'Ball+Sphere', 'Db_sigma_highE.mat')).Db_sigma_highE;
 
-pivot=E_Db+Db_mean_bias_highE;
-sigma=Db_sigma_highE;
+Db_pivot=E_Db+Db_mean_bias_highE;
+Db_sigma=Db_sigma_highE;
 
 Db_Measured = NaN*ones(size(SampleMask));
 Db_Measured(SampleMask==1) = measured_Db;
 
 
-%% Db individual figures
+%% Db Axial slice
+
+% Find  slice
+dMRI_axial_slice = ceil(MGE_axial_slice/8);
+
+this_map = Db_Measured(disp_v2, disp_v1, dMRI_axial_slice);
 
 
-for sl=slices
+f=figure;
+f.Position = [488   242   500   500];
+ax=axes;
+ax.Position = [0.1,0.1,0.8,0.8];
 
-    this_cs = squeeze(Db_Measured(sl,disp_v1,disp_h));
-    
-    f=figure;
-    fpos = f.Position;
-    fpos(3)=(axh/axv)*fpos(3);
-    f.Position = fpos;
-    tiledlayout(1,1);
-    nexttile;
-    % imshow(this_cs,[0 lim_max])
-    imshow(this_cs,[pivot-3*sigma pivot+3*sigma])
-    daspect([2,1,1])
-    cb=colorbar;
-    cb.Label.String='D_{ball} x1e-3 mm^2/s';
-    
-    set(gca, 'Color', [0 0 0])    % Black background
-    im = findobj(gca,'Type','image');
-    im.AlphaData = ~isnan(this_cs);
-    axis on
-    set(gca, 'XTick', [], 'YTick', [])
-    crameri('-vik', 'pivot', pivot)
-    
-    title([sample_num ' slice ' num2str(sl)])
-    % 
-    % exportgraphics(f, ...
-    %     fullfile(projectfolder, 'Thesis Figures', 'Parameter Maps', [sample_num '_Db_sl' num2str(sl) '.png']) ...
-    %     ,'BackgroundColor','none','Resolution',300)
+imshow(this_map, [Db_pivot-3*Db_sigma Db_pivot+3*Db_sigma])
 
-end
+cb=colorbar;
+cb.Label.String='D_{ball} \mum^2/ms';
+cb.Ticks = 0.2:0.2:1;
+
+set(gca, 'Color', [0 0 0])    % Black background
+im = findobj(gca,'Type','image');
+im.AlphaData = ~isnan(this_map);
+axis on
+set(gca, 'XTick', [], 'YTick', [])
+crameri('-vik', 'pivot', Db_pivot)
+
+ax.FontSize=14;
+
+exportgraphics(f, ...
+     fullfile(projectfolder, 'Thesis Figures', 'Cancer Parameter Maps', [sample_num '_Db_ax_' num2str(dMRI_axial_slice) '.png']), ...
+    'BackgroundColor','none','Resolution',300)
 
 
 %% Db All in one figure
