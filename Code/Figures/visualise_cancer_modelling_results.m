@@ -148,7 +148,7 @@ ax.Position = [0.1,0.1,0.8,0.8];
 imshow(MGE(MGE_disp_v2, MGE_disp_v1, MGE_axial_slice)*1e8, [])
 
 cb=colorbar;
-cb.Label.String='MGE signal (A.U.)';   
+cb.Label.String = 'Gradient echo signal (a.u.)';   
 
 ax.FontSize=14;
 

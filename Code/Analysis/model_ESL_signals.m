@@ -7,7 +7,7 @@ projectfolder = pwd;
 
 RESULTS = struct();
 
-SaveRESULTS = false;
+SaveRESULTS = true;
 
 %% Sample and scheme details
 
@@ -26,8 +26,8 @@ components = {'E', 'S'};
 
 modelnames = {
   'ADC',...
-  ...'DKI',...
-  ...'Sphere',...
+  'DKI',...
+  'Sphere',...
   'Ball+Sphere'...
     };
 
@@ -35,7 +35,7 @@ modelnames = {
 lambda = 0e-3; % Regularisation
 fittingtechnique = 'LSQ';
 
-DisplayPredictions = true;
+DisplayPredictions = false;
 
 DisplayLikelihoodProfiles = false;
 

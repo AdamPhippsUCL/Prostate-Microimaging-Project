@@ -190,38 +190,51 @@ for imgindx = 1:Nimg
     % scatter(y-residuals, residuals, CData = X)
     % close(f)
 
+    % == Standard error and confidence intervals
 
-    % == BOOTSTRAPPING 
+    SE = mdl.Coefficients.SE;
+    CI = coefCI(mdl, 0.05);
 
-    % All data
-    N=length(y);
+    signals(:,imgindx,2) = [SE;0] ; % Standard error
+    signals(:,imgindx,3) = [CI(:,1); 0]; % 2.5th percentile
+    signals(:,imgindx,4) = [CI(:,2); 0]; % 97.5th percentile
 
-    B=10000;
-    bootstrap_indices = randi(N, N, B);
-    BootFits = zeros(B,3);
-    BootR2s = zeros(B,1);
 
-    for bindx = 1:B
 
-        thismdl = fitlm(X(bootstrap_indices(:,bindx), 1:2), y(bootstrap_indices(:,bindx)), 'Intercept', false);
 
-        thisbeta_fit = thismdl.Coefficients.Estimate;
-        BootFits(bindx, 1:2) = thisbeta_fit;
-        BootFits(bindx, 3) = Sl;
+    % % == BOOTSTRAPPING 
+    % 
+    % % All data
+    % N=length(y);
+    % 
+    % B=10000;
+    % bootstrap_indices = randi(N, N, B);
+    % BootFits = zeros(B,3);
+    % BootR2s = zeros(B,1);
+    % 
+    % for bindx = 1:B
+    % 
+    %     thismdl = fitlm(X(bootstrap_indices(:,bindx), 1:2), y(bootstrap_indices(:,bindx)), 'Intercept', false);
+    % 
+    %     thisbeta_fit = thismdl.Coefficients.Estimate;
+    %     BootFits(bindx, 1:2) = thisbeta_fit;
+    %     BootFits(bindx, 3) = Sl;
+    % 
+    %     BootR2s(bindx)= thismdl.Rsquared.Ordinary;
+    % 
+    % end
+    % 
+    % signals(:,imgindx,2) = std(BootFits); % Standard error
+    % signals(:,imgindx,3) = prctile(BootFits,2.5); % 2.5th percentile
+    % signals(:,imgindx,4) = prctile(BootFits,97.5); % 97.5th percentile
 
-        BootR2s(bindx)= thismdl.Rsquared.Ordinary;
 
-    end
-
-    signals(:,imgindx,2) = std(BootFits); % Standard error
-    signals(:,imgindx,3) = prctile(BootFits,2.5); % 2.5th percentile
-    signals(:,imgindx,4) = prctile(BootFits,97.5); % 97.5th percentile
 
     % RESULTS
     RESULTS(imgindx).E = [signals(1, imgindx, 1), signals(1, imgindx, 3), signals(1, imgindx, 4)];
     RESULTS(imgindx).S = [signals(2, imgindx, 1), signals(2, imgindx, 3), signals(2, imgindx, 4)];
     RESULTS(imgindx).L = [signals(3, imgindx, 1), signals(3, imgindx, 3), signals(3, imgindx, 4)];
-    RESULTS(imgindx).R2 = [R2, prctile(BootR2s, 2.5), prctile(BootR2s, 97.5)];
+    RESULTS(imgindx).R2 = R2;%[R2, prctile(BootR2s, 2.5), prctile(BootR2s, 97.5)];
     RESULTS(imgindx).Residuals = residuals;
     RESULTS(imgindx).y = y;
 
@@ -305,7 +318,7 @@ end
 Meta = struct();
 Meta.SampleNames = SampleNames;
 Meta.SeriesDescriptions = SeriesDescriptions;
-Meta.Nboot = B;
+% Meta.Nboot = B;
 
 save(fullfile(savefolder, 'signals.mat'), 'signals')
 save(fullfile(savefolder, 'scheme.mat'), 'scheme')

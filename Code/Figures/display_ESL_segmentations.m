@@ -4,7 +4,7 @@ clear;
 projectfolder = pwd;
 
 % Sample
-samplename = '20250524_UQ9';
+samplename = '20250407_UQ5';
 %'20250224_UQ4'
 %'20250407_UQ5'
 %'20250414_UQ6'
@@ -39,7 +39,7 @@ displaymasks(:,:,:,3) = logical(LUMEN);
 % Good for figure: 9N, 9B, 8M
 
 % SAMPLE NUMBER
-snum = 'UQ9N';
+snum = 'UQ8M';
 
 sl=120;
 switch snum
@@ -97,7 +97,7 @@ nexttile;
 img=rot90(squeeze(MGE(sl,xs,ys)), rotdirec)*1e8;
 imshow(img,[0 1e8*prctile(squeeze(MGE(sl,xs,ys)), 99.9, 'all')]);
 cb=colorbar;
-cb.Label.String = 'MGE signal (A.U.)';
+cb.Label.String = 'Gradient echo signal (a.u.)';
 cb.Ticks = 2:2:20;
 
 f2=figure;
@@ -106,7 +106,7 @@ nexttile;
 img = 1e3*rot90(squeeze(dwFA(sl,xs,ys)), rotdirec);
 imshow(img,[0, 0.55]);%1e4*[0 5.5e-4]);
 cb=colorbar;
-cb.Label.String='MD \times FA (\mum^2/ms)';
+cb.Label.String='MD \times FA \mum^2/ms';
 cb.Ticks = 0.1:0.1:1;
 
 f3=figure;

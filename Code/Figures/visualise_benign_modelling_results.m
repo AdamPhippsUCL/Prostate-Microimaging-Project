@@ -152,7 +152,7 @@ for sl=slices
     axis image
     % title([sample_num ' slice ' num2str(sl)])
     cb=colorbar;
-    cb.Label.String='MGE signal (A.U.)';  
+    cb.Label.String='Gradient echo signal (a.u.)';  
 
 
     % hold on
